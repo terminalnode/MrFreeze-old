@@ -15,7 +15,10 @@ async def on_ready():
     print ('User ID: ' + str(bot.user.id))
     print ('-----------')
 
-
+############################
+########## banish ##########
+### BANISH TO ANTARCTICA ###
+############################
 @bot.command()
 async def banish(self, member: discord.Member):
     if discord.utils.get(self.guild.roles, name='Administration') in self.author.roles:
@@ -27,6 +30,38 @@ async def banish(self, member: discord.Member):
     else:
         print ('FAIL - Command "banish" issued by {0.author}, ID: '.format(self) + str(self.author.id))
         await self.channel.send('Sorry ' + self.author.mention + ', you need to be a mod to do that.'.format(self))
+
+#######################
+######## ban ##########
+### BAN FROM SERVER ###
+#######################
+@bot.command()
+async def ban(self, member: discord.Member):
+    pass
+
+########################
+######### kick #########
+### KICK FROM SERVER ###
+########################
+@bot.command()
+async def kick(self, member: discord.Member):
+    pass
+
+#################
+##### mute ######
+### MUTE USER ###
+#################
+@bot.command()
+async def mute(self, member: discord.Member):
+    pass
+
+#############################
+########### rps #############
+### ROCK, PAPER, SCISSORS ###
+#############################
+@bot.command()
+async def rps(self, choice):
+    pass
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
