@@ -22,7 +22,7 @@ async def banish(self, member: discord.Member):
         print ('SUCCESS - Command "banish" issued by {0.author}, ID: '.format(self) + str(self.author.id))
         await self.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
         await member.add_roles(discord.utils.get(self.guild.roles, name='Antarctica'))
-        await asyncio.sleep(5*60)
+        await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
         await member.remove_roles(discord.utils.get(self.guild.roles, name='Antarctica'))
     else:
         print ('FAIL - Command "banish" issued by {0.author}, ID: '.format(self) + str(self.author.id))
@@ -38,4 +38,5 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # Client.run with the bots token
-bot.run(open('token', 'r').read())
+token = open('token', 'r').read().strip()
+bot.run(token)
