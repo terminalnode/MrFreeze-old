@@ -60,4 +60,4 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # Client.run with the bots token
-bot.run('NDY2MjM5OTU2NDgyOTE2MzUy.DiZOJQ._YlctLtAhweMWt6DRdcjT7JheZM')
+bot.run(open('token', 'r').read())
