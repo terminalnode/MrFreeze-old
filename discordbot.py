@@ -28,28 +28,6 @@ async def banish(self, member: discord.Member):
         print ('FAIL - Command "banish" issued by {0.author}, ID: '.format(self) + str(self.author.id))
         await self.channel.send('Sorry ' + self.author.mention + ', you need to be a mod to do that.'.format(self))
 
-#Experiments:
-# print (type(member)) #discord.member.Member
-#    print (type(self.author)) #discord.member.Member
-#    print ('self: ' + str(self) + ', is type:\n' + str(type(self)))       ### context
-#    print ('target: ' + str(target) + ', is type:\n' + str(type(target))) ### string
-#    await self.add_roles()
-
-
-#@bot.event
-#async def on_message(message):
-#    if message.author == bot.user:
-#        return
-#
-#    else:
-#        await message.channel.send(message.content + " :emoji:")
-
-####
-#@bot.event
-#async def on_message_delete(message):
-#        await message.channel.send("The following message was deleted:\n" + message.content)
-####
-
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
 # No one will ever read this...
