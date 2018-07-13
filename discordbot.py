@@ -63,6 +63,14 @@ async def mute(self, member: discord.Member):
 async def rps(self, choice):
     pass
 
+##############################
+######## temperature #########
+### TEMPERATURE CONVERSION ###
+##############################
+@bot.command()
+async def temperature(self, temp, unit):
+    pass
+
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
 # No one will ever read this...
