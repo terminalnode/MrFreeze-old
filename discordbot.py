@@ -6,9 +6,26 @@ import asyncio
 
 bot = commands.Bot(command_prefix='!')
 
+# TODO: Test not_implemented.
+# TODO: Retest banish.
+# TODO: Test new command-logger function.
+
+###
+### This will be used for functions which are planned
+### for but not yet implemented to give users a heads up.
+###
 async def not_implemented(message, command):
     await message.channel.send(message.author.mention " The command '" + command "' isn't implemented yet. Try again some other time!")
     return
+
+###
+### This will be used to both print a message to the terminal
+### as well as put it down in a log.
+###
+async def commandlog(newlog):
+    t = time.gmtime()
+    print ("%s\tnewlog" % time.asctime(t))
+    print ("%s\tnewlog" % time.asctime(t), file=commandlog)
 
 # This will be printed in the console once the
 # bot has been connected to discord.
