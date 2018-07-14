@@ -6,6 +6,10 @@ import asyncio
 
 bot = commands.Bot(command_prefix='!')
 
+async def not_implemented(message, command):
+    await message.channel.send(message.author.mention " The command '" + command "' isn't implemented yet. Try again some other time!")
+    return
+
 # This will be printed in the console once the
 # bot has been connected to discord.
 @bot.event
@@ -36,40 +40,40 @@ async def banish(self, member: discord.Member):
 ### BAN FROM SERVER ###
 #######################
 @bot.command()
-async def ban(self, member: discord.Member):
-    pass
+async def ban(message, member: discord.Member):
+    not_implemented(message, 'ban')
 
 ########################
 ######### kick #########
 ### KICK FROM SERVER ###
 ########################
 @bot.command()
-async def kick(self, member: discord.Member):
-    pass
+async def kick(message, member: discord.Member):
+    not_implemented(message, 'kick')
 
 #################
 ##### mute ######
 ### MUTE USER ###
 #################
 @bot.command()
-async def mute(self, member: discord.Member):
-    pass
+async def mute(message, member: discord.Member):
+    not_implemented(message, 'mute')
 
 #############################
 ########### rps #############
 ### ROCK, PAPER, SCISSORS ###
 #############################
 @bot.command()
-async def rps(self, choice):
-    pass
+async def rps(message, choice):
+    not_implemented(message, 'rps')
 
 ##############################
 ######## temperature #########
 ### TEMPERATURE CONVERSION ###
 ##############################
 @bot.command()
-async def temperature(self, temp, unit):
-    pass
+async def temperature(message, temp, unit):
+    not_implemented(message, 'temperature)
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
