@@ -24,16 +24,16 @@ async def on_ready():
 ### BANISH TO ANTARCTICA ###
 ############################
 @bot.command()
-async def banish(self, member: discord.Member):
-    if discord.utils.get(self.guild.roles, name='Administration') in self.author.roles:
-        print ('SUCCESS - Command "banish" issued by {0.author}, ID: '.format(self) + str(self.author.id))
-        await self.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
-        await member.add_roles(discord.utils.get(self.guild.roles, name='Antarctica'))
+async def banish(message, member: discord.Member):
+    if discord.utils.get(message.guild.roles, name='Administration') in message.author.roles:
+        print ('SUCCESS - Command "banish" issued by {0.author}, ID: '.format(message) + str(message.author.id))
+        await message.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
+        await member.add_roles(discord.utils.get(message.guild.roles, name='Antarctica'))
         await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
-        await member.remove_roles(discord.utils.get(self.guild.roles, name='Antarctica'))
+        await member.remove_roles(discord.utils.get(message.guild.roles, name='Antarctica'))
     else:
-        print ('FAIL - Command "banish" issued by {0.author}, ID: '.format(self) + str(self.author.id))
-        await self.channel.send('Sorry ' + self.author.mention + ', you need to be a mod to do that.'.format(self))
+        print ('FAIL - Command "banish" issued by {0.author}, ID: '.format(message) + str(message.author.id))
+        await message.channel.send('Sorry ' + message.author.mention + ', you need to be a mod to do that.'.format(message))
 
 #######################
 ######## ban ##########
