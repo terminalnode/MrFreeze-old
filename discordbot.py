@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import logging
 import asyncio
+import time
 
 bot = commands.Bot(command_prefix='!')
 
@@ -15,7 +16,7 @@ bot = commands.Bot(command_prefix='!')
 ### for but not yet implemented to give users a heads up.
 ###
 async def not_implemented(message, command):
-    await message.channel.send(message.author.mention " The command '" + command "' isn't implemented yet. Try again some other time!")
+    await message.channel.send(message.author.mention + " The command '" + command + "' isn't implemented yet. Try again some other time!")
     return
 
 ###
@@ -23,9 +24,11 @@ async def not_implemented(message, command):
 ### as well as put it down in a log.
 ###
 async def commandlog(newlog):
-    t = time.gmtime()
-    print ("%s\tnewlog" % time.asctime(t))
-    print ("%s\tnewlog" % time.asctime(t), file=commandlog)
+    t = time.asctime(time.gmtime())
+    commandlog = open('commands.log', 'w')
+    print (t + ' ' + newlog )
+    print (t + ' ' + newlog, file=commandlog)
+    commandlog.close()
 
 # This will be printed in the console once the
 # bot has been connected to discord.
@@ -43,13 +46,13 @@ async def on_ready():
 @bot.command()
 async def banish(message, member: discord.Member):
     if discord.utils.get(message.guild.roles, name='Administration') in message.author.roles:
-        print ('SUCCESS - Command "banish" issued by {0.author}, ID: '.format(message) + str(message.author.id))
+        await commandlog('SUCCESS\t Command "banish" issued by {0.author}, ID: '.format(message) + str(message.author.id))
         await message.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
         await member.add_roles(discord.utils.get(message.guild.roles, name='Antarctica'))
         await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
         await member.remove_roles(discord.utils.get(message.guild.roles, name='Antarctica'))
     else:
-        print ('FAIL - Command "banish" issued by {0.author}, ID: '.format(message) + str(message.author.id))
+        await commandlog('FAIL\t Command "banish" issued by {0.author}, ID: '.format(message) + str(message.author.id))
         await message.channel.send('Sorry ' + message.author.mention + ', you need to be a mod to do that.'.format(message))
 
 #######################
@@ -58,7 +61,7 @@ async def banish(message, member: discord.Member):
 #######################
 @bot.command()
 async def ban(message, member: discord.Member):
-    not_implemented(message, 'ban')
+    await not_implemented(message, 'ban')
 
 ########################
 ######### kick #########
@@ -66,7 +69,7 @@ async def ban(message, member: discord.Member):
 ########################
 @bot.command()
 async def kick(message, member: discord.Member):
-    not_implemented(message, 'kick')
+    await not_implemented(message, 'kick')
 
 #################
 ##### mute ######
@@ -74,7 +77,7 @@ async def kick(message, member: discord.Member):
 #################
 @bot.command()
 async def mute(message, member: discord.Member):
-    not_implemented(message, 'mute')
+    await not_implemented(message, 'mute')
 
 #############################
 ########### rps #############
@@ -82,7 +85,7 @@ async def mute(message, member: discord.Member):
 #############################
 @bot.command()
 async def rps(message, choice):
-    not_implemented(message, 'rps')
+    await not_implemented(message, 'rps')
 
 ##############################
 ######## temperature #########
@@ -90,7 +93,7 @@ async def rps(message, choice):
 ##############################
 @bot.command()
 async def temperature(message, temp, unit):
-    not_implemented(message, 'temperature)
+    await not_implemented(message, 'temperature')
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
