@@ -7,10 +7,6 @@ import time
 
 bot = commands.Bot(command_prefix='!')
 
-# TODO: Test not_implemented.
-# TODO: Retest banish.
-# TODO: Test new command-logger function.
-
 ###
 ### This will be used for functions which are planned
 ### for but not yet implemented to give users a heads up.
@@ -105,5 +101,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # Client.run with the bots token
+# Place your token in a file called 'token'
+# Put the file in the same directory as the bot.
 token = open('token', 'r').read().strip()
 bot.run(token)
