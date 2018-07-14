@@ -48,7 +48,7 @@ async def banish(ctx, member: discord.Member):
         await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
         await member.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
     else:
-        await commandlog('FAIL\t Command "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
+        await commandlog('FAIL\t\t Command "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
         await ctx.channel.send('Sorry ' + ctx.author.mention + ', you need to be a mod to do that.'.format(ctx))
 
 #######################
