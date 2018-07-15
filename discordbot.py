@@ -75,6 +75,11 @@ async def _ban(ctx, *kwargs):
 async def _rules(ctx, *kwargs):
     prevrule = False
     ruleprint = str()
+    rules = list()
+    for line in open('rulesfile', 'r'):
+        # .rstrip() strips each line of a trailing linebreak.
+        # When python
+        rules.append(line.rstrip().replace('\\n', '\n'))
 
     def checkprevrule():
         nonlocal prevrule
@@ -97,40 +102,31 @@ async def _rules(ctx, *kwargs):
         kwargs = ('1','2','3','4','5','6','7')
     if '1' in kwargs:
         checkprevrule()
-        ruleprint += ('**Rule 1**\n' +
-        'Keep things relevant to the channel you are participating in. ' +
-        'It’s okay to be a bit off topic here and there, but it is important to ' +
-        'realize and move to the proper channel to continue the conversation.')
+        ruleprint += rules[0]
         prevrule = True
     if '2' in kwargs:
         checkprevrule()
-        ruleprint += ('**Rule 2**\n' +
-        'Keep things civil. If there is a disagreement, stop when asked to stop.')
+        ruleprint += rules[1]
         prevrule = True
     if '3' in kwargs:
         checkprevrule()
-        ruleprint += ('**Rule 3**\n' +
-        'Do not be dismissive of others’ opinions.')
+        ruleprint += rules[2]
         prevrule = True
     if '4' in kwargs:
         checkprevrule()
-        ruleprint += ('**Rule 4**\n' +
-        'No joking based on what people cannot immediately change. ie no jokes on race, weight, sexual orientation.')
+        ruleprint += rules[3]
         prevrule = True
     if '5' in kwargs:
         checkprevrule()
-        ruleprint += ('**Rule 5**\n' +
-        'Act your age, not your shoe size. Unless of course, your shoe size is somehow above your age, in such cases, act your shoe size.')
+        ruleprint += rules[4]
         prevrule = True
     if '6' in kwargs:
         checkprevrule()
-        ruleprint += ('**Rule 6**\n' +
-        'No spamming the board.')
+        ruleprint += rules[5]
         prevrule = True
     if '7' in kwargs:
         checkprevrule()
-        ruleprint += ('**Rule 7**\n' +
-        'Be nice to everyone. Not following this rule will get you removed from the server quickly and effectively.')
+        ruleprint += rules[6]
         prevrule = True
     await ctx.channel.send(ruleprint)
 
