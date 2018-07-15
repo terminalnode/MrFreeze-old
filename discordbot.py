@@ -22,9 +22,9 @@ async def not_implemented(ctx, command):
 ###
 async def commandlog(newlog):
     t = time.asctime(time.gmtime())
-    commandlog = open('commands.log', 'w')
+    commandlog = open('commands.log', 'a')
     print (t + ' ' + newlog )
-    print (t + ' ' + newlog, file=commandlog)
+    commandlog.write(t + ' ' + newlog + '\n')
     commandlog.close()
 
 # This will be printed in the console once the
@@ -180,7 +180,8 @@ async def _temp(ctx, *kwargs):
 
 @bot.command(name='source')
 async def _source(ctx, *kwargs):
-    await ctx.channel.send('My source code is available at:\n https://github.com/kaminix/DrFreeze')
+    await ctx.channel.send('My source code is available at:\n' +
+                           'https://github.com/kaminix/DrFreeze')
     await commandlog('SUCCESS\tCommand "source" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
 
 # Log setup in accordance with:
