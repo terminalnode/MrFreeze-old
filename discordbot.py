@@ -60,7 +60,15 @@ async def _banish(ctx, member: discord.Member):
 ### BAN FROM SERVER ###
 #######################
 @bot.command(name='ban')
-async def _ban(ctx, member: discord.Member):
+async def _ban(ctx, *kwargs):
+    await not_implemented(ctx, 'ban')
+
+#################
+##### rules #####
+### GET RULES ###
+#################
+@bot.command(name='rules')
+async def _rules(ctx, *kwargs):
     await not_implemented(ctx, 'ban')
 
 ########################
@@ -76,7 +84,7 @@ async def _kick(ctx, member: discord.Member):
 ### MUTE USER ###
 #################
 @bot.command(name='mute')
-async def _mute(ctx, member: discord.Member):
+async def _mute(ctx, *kwargs):
     await not_implemented(ctx, 'mute')
 
 #############################
@@ -84,8 +92,24 @@ async def _mute(ctx, member: discord.Member):
 ### ROCK, PAPER, SCISSORS ###
 #############################
 @bot.command(name='rps')
-async def _rps(ctx, choice):
+async def _rps(ctx, *kwargs):
     await not_implemented(ctx, 'rps')
+
+#####################
+###### region #######
+### SELECT REGION ###
+#####################
+@bot.command(name='region')
+async def _region(ctx, *kwargs):
+    await not_implemented(ctx, 'region')
+
+###################
+###### vote #######
+### CALL A VOTE ###
+###################
+@bot.command(name='vote')
+async def _vote(ctx, *kwargs):
+    await not_implemented(ctx, 'region')
 
 ##############################
 ############ temp ############
@@ -96,16 +120,16 @@ async def _temp(ctx, *kwargs):
     # Check if we have any kwargs
     if not kwargs:
         kwargs = ('help',)
-        print(kwargs)
 
     if kwargs[0] == 'help':
         await ctx.channel.send('**Example usage:**\n' +
                                '!temp 50 C or !temp 50 F')
         await commandlog('HELP\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
+        return
 
     elif len(kwargs) < 2:
         await ctx.channel.send('Hey there ' + ctx.author.mention + '! You need to specify both temperature and unit.\n' +
-                               'Example: !temp 50 C or !temp 50 F')
+                               'Type !temp help for instructions.')
         await commandlog('FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                          '\n\t\t\t\t\t' + 'Invalid formatting, command requires at least two arguments.')
         return
@@ -124,7 +148,7 @@ async def _temp(ctx, *kwargs):
     else:
         await ctx.channel.send('Hey there ' + ctx.author.mention + '! You forgot to specify a unit.\n' +
                                'Valid units are C for celcius and F for Fahrenheit.\n' +
-                               'Example: !temp 50 C or !temp 50 F')
+                               'Type !temp help for instructions.')
         await commandlog('FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                          '\n\t\t\t\t\t' + 'No unit specified.')
         return
@@ -132,8 +156,8 @@ async def _temp(ctx, *kwargs):
     try:
         temp = float(temp)
     except ValueError:
-        await ctx.channel.send('You need to specify temperature first and original unit afterwards.')
-        await ctx.channel.send('Example: !temp 50 C or !temp 50 F')
+        await ctx.channel.send('You need to specify temperature first and original unit afterwards.' +
+                               'Type !temp help for instructions.')
         await commandlog('FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                              '\n\t\t\t\t\t' + 'Invalid formatting, command requires an integer.')
         return
@@ -154,11 +178,10 @@ async def _temp(ctx, *kwargs):
         await commandlog('SUCCESS\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                          '\n\t\t\t\t\t' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!' )
 
-
-
 @bot.command(name='source')
-async def _source(ctx):
+async def _source(ctx, *kwargs):
     await ctx.channel.send('My source code is available at:\n https://github.com/kaminix/DrFreeze')
+    await commandlog()
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
