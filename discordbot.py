@@ -41,6 +41,8 @@ async def on_ready():
 ### BANISH TO ANTARCTICA ###
 ############################
 @bot.command(name='banish')
+# Use this to create an error handler for bad arguments.
+# https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
 async def _banish(ctx, member: discord.Member):
     print(type(member))
     print(ctx.guild.name)
@@ -71,7 +73,67 @@ async def _ban(ctx, *kwargs):
 #################
 @bot.command(name='rules')
 async def _rules(ctx, *kwargs):
-    await not_implemented(ctx, 'ban')
+    prevrule = False
+    ruleprint = str()
+
+    def checkprevrule():
+        nonlocal prevrule
+        nonlocal ruleprint
+        if prevrule == True:
+            ruleprint += '\n\n'
+
+    if not kwargs:
+        kwargs = ('help',)
+
+    if 'help' in kwargs:
+        ruleprint += ('**Rules**\n' +
+        'Full list of rules are available in ' + discord.utils.get(ctx.guild.channels, name='rules').mention + '.\n'
+        'To use this command type !rules followed by the numbers of the rules you wish to have listed,' +
+        'or the keyword for the desired rule.\n' +
+        '**Keywords:**\n\ntopic, ontopic, civil, dismissive, jokes, shoes, spam, benice, be nice, allrules, all rules'
+        )
+        return
+    if 'allrules' in kwargs or
+       'all' and 'rules' in kwargs:
+        kwargs = ('1','2','3','4','5','6','7')
+    if '1' in kwargs:
+        checkprevrule()
+        ruleprint += ('**Rule 1**\n' +
+        'Keep things relevant to the channel you are participating in. ' +
+        'It’s okay to be a bit off topic here and there, but it is important to ' +
+        'realize and move to the proper channel to continue the conversation.')
+        prevrule = True
+    if '2' in kwargs:
+        checkprevrule()
+        ruleprint += ('**Rule 2**\n' +
+        'Keep things civil. If there is a disagreement, stop when asked to stop.')
+        prevrule = True
+    if '3' in kwargs:
+        checkprevrule()
+        ruleprint += ('**Rule 3**\n' +
+        'Do not be dismissive of others’ opinions.')
+        prevrule = True
+    if '4' in kwargs:
+        checkprevrule()
+        ruleprint += ('**Rule 4**\n' +
+        'No joking based on what people cannot immediately change. ie no jokes on race, weight, sexual orientation.')
+        prevrule = True
+    if '5' in kwargs:
+        checkprevrule()
+        ruleprint += ('**Rule 5**\n' +
+        'Act your age, not your shoe size. Unless of course, your shoe size is somehow above your age, in such cases, act your shoe size.')
+        prevrule = True
+    if '6' in kwargs:
+        checkprevrule()
+        ruleprint += ('**Rule 6**\n' +
+        'No spamming the board.')
+        prevrule = True
+    if '7' in kwargs:
+        checkprevrule()
+        ruleprint += ('**Rule 7**\n' +
+        'Be nice to everyone. Not following this rule will get you removed from the server quickly and effectively.')
+        prevrule = True
+    await ctx.channel.send(ruleprint)
 
 ########################
 ######### kick #########
