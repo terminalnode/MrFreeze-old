@@ -181,7 +181,7 @@ async def _temp(ctx, *kwargs):
 @bot.command(name='source')
 async def _source(ctx, *kwargs):
     await ctx.channel.send('My source code is available at:\n https://github.com/kaminix/DrFreeze')
-    await commandlog()
+    await commandlog('SUCCESS\tCommand "source" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
