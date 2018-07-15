@@ -9,19 +9,21 @@ This bot was tested in Python 3.5.5, but should also work in 3.6. It will not wo
 Not wanting to upload the token of my bot to github this is read from a separate text file called 'token' which you place in the same directory as the bot. If you don't do this however, it will produce an error message with instructions on how to set this up.
 
 ## Available commands
+(Mod) indicates that only mods are allowed to issue the command.
+
 ### Fully implemented
-* **!banish**   Mod-only. Assigns the tag 'Antarctica' to a user for five minutes.\n
-* **!temp**     Converts a temperature from fahrenheit to celcius and vice versa.
+* **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.\n
+* **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 
 ### Almost implemented
-* **!rules**    Prints a select number of rules.
+* **!rules**    - Prints a select number of rules.
 
 ### Planned but not yet implemented
-* **!ban**      Mod-only. Bans the user from the server.
-* **!kick**     Mod-only. Kicks the user from the server.
-* **!mute**     Mod-only. Mutes the user.
-* **!rps**      Play rock, paper, scissors with the bot.
-* **!dice**     Roll a select number of dice. Intend to also implement option to select type of dice.
-* **!region**   Allows a user to assign a regional role such as continent (could also be used for countries).
-* **!vote**     Creates a vote where users vote by reacting with specified emoji.
-* **!source**   Posts a link to this github page.
+* **!ban**      - (Mod) Bans the user from the server.
+* **!kick**     - (Mod) Kicks the user from the server.
+* **!mute**     - (Mod) Mutes the user.
+* **!rps**      - Play rock, paper, scissors with the bot.
+* **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
+* **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
+* **!vote**     - Creates a vote where users vote by reacting with specified emoji.
+* **!source**   - Posts a link to this github page.
