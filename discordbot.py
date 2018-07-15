@@ -93,8 +93,7 @@ async def _rules(ctx, *kwargs):
         '**Keywords:**\n\ntopic, ontopic, civil, dismissive, jokes, shoes, spam, benice, be nice, allrules, all rules'
         )
         return
-    if 'allrules' in kwargs or
-       'all' and 'rules' in kwargs:
+    if 'allrules' in kwargs:
         kwargs = ('1','2','3','4','5','6','7')
     if '1' in kwargs:
         checkprevrule()
