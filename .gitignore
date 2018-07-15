@@ -1,4 +1,3 @@
 /token
-/discord.log
-/commands.log
+/logs
 /experimentation.py
