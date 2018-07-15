@@ -261,5 +261,11 @@ logger.addHandler(handler)
 # Client.run with the bots token
 # Place your token in a file called 'token'
 # Put the file in the same directory as the bot.
-token = open('token', 'r').read().strip()
-bot.run(token)
+try:
+    token = open('token', 'r').read().strip()
+    bot.run(token)
+except:
+    print ('\nERROR: BOT TOKEN MISSING\n' +
+           'Please put your bot\'s token in a separate text file called \'token\'.\n' +
+           'This file should be located in the same directory as the bot files.\n')
+    exit()
