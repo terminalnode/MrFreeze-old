@@ -1,12 +1,8 @@
 # Discord bot by TerminalNode
 import discord
 from discord.ext import commands
-import logging, os
-import asyncio
-import time
-import fractions, decimal
-
-#test
+import logging, os, asyncio
+import time, fractions
 
 bot = commands.Bot(command_prefix='!')
 
@@ -22,9 +18,9 @@ async def not_implemented(ctx, command):
 ### This will be used to both print a message to the terminal
 ### as well as put it down in a log.
 ###
-async def commandlog(newlog, guildname):
+async def commandlog(ctx, newlog):
     t = time.asctime(time.gmtime())
-    commandlog = open('logs/commandlogs/' + guildname, 'a')
+    commandlog = open('logs/commandlogs/' + ctx.guild.name + ' ' + str(ctx.guild.id), 'a')
     print (t + ' ' + newlog )
     commandlog.write(t + ' ' + newlog + '\n')
     commandlog.close()
@@ -47,16 +43,16 @@ async def on_ready():
 # https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
 async def _banish(ctx, member: discord.Member):
     if discord.utils.get(ctx.guild.roles, name='Administration') in ctx.author.roles:
-        await commandlog('SUCCESS\tCommand "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + 'User ' + str(member.name) + "#"+ str(member.discriminator) + ' was banished.', ctx.guild.name)
+        await commandlog(ctx, 'SUCCESS\tCommand "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                         '\n\t\t\t\t\t' + 'User ' + str(member.name) + "#"+ str(member.discriminator) + ' was banished.')
         await ctx.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
         await member.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
         await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
         await member.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
     else:
-        await commandlog('FAIL\t\tCommand "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+        await commandlog(ctx, 'FAIL\t\tCommand "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                          '\n\t\t\t\t\t' + 'User did not have sufficient privilegies.' +
-                         '\n\t\t\t\t\t' + 'They tried to banish: ' + str(member.name) + '#' + str(member.discriminator), ctx.guild.name)
+                         '\n\t\t\t\t\t' + 'They tried to banish: ' + str(member.name) + '#' + str(member.discriminator))
         await ctx.channel.send('Sorry ' + ctx.author.mention + ', you need to be a mod to do that.'.format(ctx))
 
 #######################
@@ -153,20 +149,20 @@ async def _rules(ctx, *kwargs):
         'To use this command type !rules followed by the numbers of the rules you wish to have listed,' +
         'or the keyword for the desired rule.\n\n'
         )
-        await commandlog('HELP\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
+        await commandlog(ctx, 'HELP\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
         return
 
     # If the ruleprint is now empty we'll print a message and break off here
     if len(ruleprint) == 0:
         await ctx.channel.send('None of your arguments matched any rules.')
-        await commandlog('FAIL\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                        '\n\t\t\t\t\t' + 'None of the calls matched any rules: ' + kwargslist, ctx.guild.name)
+        await commandlog(ctx, 'FAIL\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                        '\n\t\t\t\t\t' + 'None of the calls matched any rules: ' + str(kwargslist))
         return
 
     # Finally, we're ready to post
     await ctx.channel.send(ruleprint)
-    await commandlog('SUCCESS\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                     '\n\t\t\t\t\t' + 'They called on rules: ' + kwargslist, ctx.guild.name)
+    await commandlog(ctx, 'SUCCESS\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                     '\n\t\t\t\t\t' + 'They called on rules: ' + str(kwargslist))
 
 ########################
 ######### kick #########
@@ -221,14 +217,14 @@ async def _temp(ctx, *kwargs):
     if kwargs[0] == 'help':
         await ctx.channel.send('**Example usage:**\n' +
                                '!temp 50 C or !temp 50 F')
-        await commandlog('HELP\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id), ctx.guild.name)
+        await commandlog(ctx, 'HELP\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
         return
 
     elif len(kwargs) < 2:
         await ctx.channel.send('Hey there ' + ctx.author.mention + '! You need to specify both temperature and unit.\n' +
                                'Type !temp help for instructions.')
-        await commandlog('FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + 'Invalid formatting, command requires at least two arguments.', ctx.guild.name)
+        await commandlog(ctx, 'FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                         '\n\t\t\t\t\t' + 'Invalid formatting, command requires at least two arguments.')
         return
 
     else:
@@ -246,8 +242,8 @@ async def _temp(ctx, *kwargs):
         await ctx.channel.send('Hey there ' + ctx.author.mention + '! You forgot to specify a unit.\n' +
                                'Valid units are C for celcius and F for Fahrenheit.\n' +
                                'Type !temp help for instructions.')
-        await commandlog('FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + 'No unit specified.', ctx.guild.name)
+        await commandlog(ctx, 'FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                         '\n\t\t\t\t\t' + 'No unit specified.')
         return
 
     try:
@@ -255,8 +251,8 @@ async def _temp(ctx, *kwargs):
     except ValueError:
         await ctx.channel.send('You need to specify temperature first and original unit afterwards.' +
                                'Type !temp help for instructions.')
-        await commandlog('FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                             '\n\t\t\t\t\t' + 'Invalid formatting, command requires an integer.', ctx.guild.name)
+        await commandlog(ctx, 'FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                             '\n\t\t\t\t\t' + 'Invalid formatting, command requires an integer.')
         return
     else:
         if unit == 'c':
@@ -272,14 +268,14 @@ async def _temp(ctx, *kwargs):
         newtemp = float(newtemp) # ensures that the number isn't a fraction
         newtemp = round(newtemp,2) # rounds to two decimal points
         await ctx.channel.send(ctx.author.mention + ' ' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!' )
-        await commandlog('SUCCESS\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!', ctx.guild.name)
+        await commandlog(ctx, 'SUCCESS\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                         '\n\t\t\t\t\t' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!')
 
 @bot.command(name='source')
 async def _source(ctx, *kwargs):
     await ctx.channel.send('My source code is available at:\n' +
                            'https://github.com/kaminix/DrFreeze')
-    await commandlog('SUCCESS\tCommand "source" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id), ctx.guild.name)
+    await commandlog(ctx, 'SUCCESS\tCommand "source" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
