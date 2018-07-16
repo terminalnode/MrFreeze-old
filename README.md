@@ -22,6 +22,7 @@ Not wanting to upload the token of my bot to github this is read from a separate
 * **!ban**      - (Mod) Bans the user from the server.
 * **!kick**     - (Mod) Kicks the user from the server.
 * **!mute**     - (Mod) Mutes the user.
+* **!botnick**  - (Mod) Changes the nick of the bot.
 * **!rps**      - Play rock, paper, scissors with the bot.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji.

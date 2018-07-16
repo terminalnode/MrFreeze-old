@@ -207,6 +207,15 @@ async def _region(ctx, *kwargs):
 async def _vote(ctx, *kwargs):
     await not_implemented(ctx, 'region')
 
+#######################
+####### botnick #######
+### CHANGE BOT NICK ###
+#######################
+@bot.command(name='vote')
+async def _vote(ctx, *kwargs):
+    await not_implemented(ctx, 'region')
+# discord.ClientUser.display_name
+
 ##############################
 ############ temp ############
 ### TEMPERATURE CONVERSION ###
