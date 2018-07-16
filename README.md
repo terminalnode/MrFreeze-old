@@ -9,11 +9,12 @@ This bot was tested in Python 3.5.5, but should also work in 3.6. It will not wo
 Not wanting to upload the token of my bot to github this is read from a separate text file called 'token' which you place in the same directory as the bot. If you don't do this however, it will produce an error message with instructions on how to set this up.
 
 ## Available commands
-(Mod) indicates that only mods are allowed to issue the command.
+Below is a list of implemented and planned commands, as well as what I'm currently working on. (Mod) indicates that only mods are allowed to issue the command.
 
 ### Fully implemented
-* **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.\n
+* **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
+* **!rules**    - Displays one, several or all rules depending on how the command is executed.
 
 ### Currently working on
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
