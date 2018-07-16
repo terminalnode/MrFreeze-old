@@ -154,7 +154,10 @@ async def _rules(ctx, *kwargs):
 
     # If the ruleprint is now empty we'll print a message and break off here
     if len(ruleprint) == 0:
-        await ctx.channel.send('None of your arguments matched any rules.')
+        if len(kwargs) > 1:
+            await ctx.channel.send(ctx.author.mention + ' None of those are real rules, you smud.')
+        else:
+            await ctx.channel.send(ctx.author.mention + ' That\'s not a real rule, you smud.')
         await commandlog(ctx, 'FAIL\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                         '\n\t\t\t\t\t' + 'None of the calls matched any rules: ' + str(kwargslist))
         return
