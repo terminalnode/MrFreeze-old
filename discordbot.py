@@ -1,7 +1,7 @@
 # Discord bot by TerminalNode
 import discord
 from discord.ext import commands
-import logging, os, asyncio
+import logging, os, asyncio, sys
 import time, fractions, signal
 
 ### Cheat, how to make list comprehensions:
@@ -330,12 +330,11 @@ except:
     print ('\nERROR: BOT TOKEN MISSING\n' +
            'Please put your bot\'s token in a separate text file called \'token\'.\n' +
            'This file should be located in the same directory as the bot files.\n')
-    exit(0)
+    sys.exit(0)
 
 # Graceful exit
 def signal_handler(sig, frame):
-        print('You pressed Ctrl+C!')
+        print('You pressed Ctrl+C! I will now do like the tree, and get out of here.')
         sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
-print('Press Ctrl+C')
 signal.pause()
