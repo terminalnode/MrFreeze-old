@@ -62,6 +62,7 @@ async def _banish(ctx, member: discord.Member):
 @bot.command(name='ban')
 async def _ban(ctx, *kwargs):
     await not_implemented(ctx, 'ban')
+    # Do not forget to add a register over banned user IDs for unban.
 
 #########################
 ######## unban ##########
