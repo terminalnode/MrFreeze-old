@@ -15,6 +15,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
+* **!source**   - Posts a link to this github page.
 
 ### Currently working on
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
@@ -27,4 +28,3 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!rps**      - Play rock, paper, scissors with the bot.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji.
-* **!source**   - Posts a link to this github page.
