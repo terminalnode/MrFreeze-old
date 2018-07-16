@@ -4,6 +4,9 @@ from discord.ext import commands
 import logging, os, asyncio
 import time, fractions
 
+### Cheat, how to make list comprehensions:
+### [ expression for item in list if conditional ]
+
 bot = commands.Bot(command_prefix='!')
 
 ###
