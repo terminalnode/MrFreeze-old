@@ -2,7 +2,7 @@
 import discord
 from discord.ext import commands
 import logging, os, asyncio, sys
-import time, fractions, signal
+import time, fractions, signal, random
 
 ### Cheat, how to make list comprehensions:
 ### [ expression for item in list if conditional ]
@@ -21,12 +21,40 @@ async def not_implemented(ctx, command):
 ### This will be used to both print a message to the terminal
 ### as well as put it down in a log.
 ###
-async def commandlog(ctx, newlog):
-    t = time.asctime(time.gmtime())
+async def commandlog(ctx, log_category, used_command, *kwargs):
     commandlog = open('logs/cmd_' + ctx.guild.name + '_' + str(ctx.guild.id), 'a')
-    print (t + ' ' + newlog )
-    commandlog.write(t + ' ' + newlog + '\n')
+
+    # First we'll print the time and whether the command was successful or not.
+    t = time.asctime(time.gmtime())
+    if log_category == 'SUCCESS':
+        logentry = t + ' SUCCESS\t'
+
+    elif log_category == 'FAIL':
+        logentry = t + ' FAIL\t\t'
+
+    elif log_category == 'HELP':
+        logentry = t + ' HELP\t\t'
+
+    # Second part will be 1) who issued the command, 2) which command was it.
+    # Command "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id)
+    logentry += 'Command \'' + used_command + '\' issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id)
+
+    # For some commands a comment on what exactly happened is added to the log.
+    # Each kwarg corresponds to one line, which will be one list entry in commentl.
+    if len(kwargs) > 0:
+        commentl = list()
+        for i in range(len(kwargs)):
+            logentry += '\n\t\t\t\t\t' + kwargs[i]
+
+    print (logentry)
+    commandlog.write(logentry + '\n')
     commandlog.close()
+
+def mrfreezequote():
+    mf_quotelist = []
+    for i in open('config/mrfreezequotes', 'r'):
+        mf_quotelist.append(i.strip())
+    return random.choice(mf_quotelist)
 
 # This will be printed in the console once the
 # bot has been connected to discord.
@@ -36,8 +64,10 @@ async def on_ready():
     print ('User name: ' + str(bot.user.name))
     print ('User ID: ' + str(bot.user.id))
     print ('-----------')
+    for i in bot.guilds:
+        await i.system_channel.send(':wave: ' + mrfreezequote())
 
-############################
+
 ########## banish ##########
 ### BANISH TO ANTARCTICA ###
 ############################
@@ -46,19 +76,23 @@ async def on_ready():
 # https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
 async def _banish(ctx, member: discord.Member):
     if discord.utils.get(ctx.guild.roles, name='Administration') in ctx.author.roles:
-        await commandlog(ctx, 'SUCCESS\tCommand "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + 'User ' + str(member.name) + "#"+ str(member.discriminator) + ' was banished.')
+        await commandlog(ctx, 'SUCCESS', 'BANISH', ('User ' + str(member.name) + "#"+ str(member.discriminator) + ' was banished.'))
         await ctx.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
         await member.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
         await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
         await member.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
     else:
-        await commandlog(ctx, 'FAIL\t\tCommand "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + 'User did not have sufficient privilegies.' +
-                         '\n\t\t\t\t\t' + 'They tried to banish: ' + str(member.name) + '#' + str(member.discriminator))
-        await ctx.channel.send('Sorry ' + ctx.author.mention + ', you need to be a mod to do that.'.format(ctx))
+        await commandlog(ctx, 'FAIL', 'BANISH',
+                        ('User did not have sufficient privilegies to banish ' + str(member.name) + '#' + str(member.discriminator)))
 
-#######################
+        await ctx.channel.send('You\'re not  allowed to banish people ' +
+                               ', you will now be banished for your transgressions.'.format(ctx) +
+                               '\n' + ctx.author.mention + ' will be banished to the frozen hells of Antarctica for 7 minutes!')
+
+        await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+        await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
+        await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+
 ######## ban ##########
 ### BAN FROM SERVER ###
 #######################
@@ -67,7 +101,6 @@ async def _ban(ctx, *kwargs):
     await not_implemented(ctx, 'ban')
     # Do not forget to add a register over banned user IDs for unban.
 
-#########################
 ######## unban ##########
 ### UNBAN FROM SERVER ###
 #########################
@@ -75,7 +108,20 @@ async def _ban(ctx, *kwargs):
 async def _ban(ctx, *kwargs):
     await not_implemented(ctx, 'ban')
 
-#################
+####### restart #######
+### RESTART THE Bot ###
+#######################
+@bot.command(name='restart')
+async def _restart(ctx, *kwargs):
+    if ctx.author.id == 154516898434908160: # This is my discord user ID. If you're modifying this, change to your ID.
+        await ctx.channel.send(ctx.author.mention + " You are the boss of me... I will restart now.")
+        await commandlog(ctx, 'SUCCESS', 'RESTART')
+        print ('\n') # extra new line after the commandlog() output
+        os.execl(sys.executable, sys.executable, *sys.argv)
+    else:
+        await ctx.channel.send(ctx.author.mention + " You're not the boss of me, I restart when Terminal wants me to.")
+        await commandlog(ctx, 'FAIL', 'RESTART')
+
 ##### rules #####
 ### GET RULES ###
 #################
@@ -94,25 +140,25 @@ async def _rules(ctx, *kwargs):
         kwargs = ('help',)
 
     # Recreating kwargs as a list
-    kwargslist = []
+    kwargsl = []
     for i in kwargs:
-        kwargslist.append(i)
+        kwargsl.append(i)
 
-    for i in range(len(kwargslist)):
+    for i in range(len(kwargsl)):
         try:
-            if kwargslist[i] == 'all' and kwargslist[i+1] == 'rules':
-                kwargslist[i] = 'allrules'
-                kwargslist.pop(i+1)
-            elif kwargslist[i] == 'on' and kwargslist[i+1] == 'topic':
-                kwargslist[i] = 'ontopic'
-                kwargslist.pop(i+1)
-            elif kwargslist[i] == 'be' and kwargslist[i+1] == 'nice':
-                kwargslist[i] = 'benice'
-                kwargslist.pop(i+1)
-            elif kwargslist[i] == 'act' and kwargslist[i+1] == 'your' and kwargslist[i+2] == 'age':
-                kwargslist[i] == 'actyourage'
-                kwargslist.pop(i+1)
-                kwargslist.pop(i+2)
+            if kwargsl[i] == 'all' and kwargsl[i+1] == 'rules':
+                kwargsl[i] = 'allrules'
+                kwargsl.pop(i+1)
+            elif kwargsl[i] == 'on' and kwargsl[i+1] == 'topic':
+                kwargsl[i] = 'ontopic'
+                kwargsl.pop(i+1)
+            elif kwargsl[i] == 'be' and kwargsl[i+1] == 'nice':
+                kwargsl[i] = 'benice'
+                kwargsl.pop(i+1)
+            elif kwargsl[i] == 'act' and kwargsl[i+1] == 'your' and kwargsl[i+2] == 'age':
+                kwargsl[i] == 'actyourage'
+                kwargsl.pop(i+1)
+                kwargsl.pop(i+2)
         except IndexError:
             pass
 
@@ -127,32 +173,32 @@ async def _rules(ctx, *kwargs):
         7: ['7', 'benice', 'nice']
     }
 
-    if 'allrules' in kwargslist:
+    if 'allrules' in kwargsl:
         # If the command is run to show all rules we simply edit it to have called all rules.
         # It's cheating a bit, but it gets the job done.
-        kwargslist = [ 1, 2, 3, 4, 5, 6, 7 ]
+        kwargsl = [ 1, 2, 3, 4, 5, 6, 7 ]
 
     # Using the dictionary r_aliases we will now replace the aliases by the correct rule number.
     for i in range(len(r_aliases)):
         rulenumber = i+1 # these are also the keys used in r_aliases
         for rulealias in r_aliases[rulenumber]: # rulealias is the entry, rulenumber is the key/rule number
-            kwargslist = [ rulenumber if item == rulealias else item for item in kwargslist ]
+            kwargsl = [ rulenumber if item == rulealias else item for item in kwargsl ]
 
     # Discord will remove trailing line breaks when posting ruleprint,
     # so we don't have to worry about adding too many.
-    if 1 in kwargslist:
+    if 1 in kwargsl:
         ruleprint += rules[0] + '\n\n'
-    if 2 in kwargslist:
+    if 2 in kwargsl:
         ruleprint += rules[1] + '\n\n'
-    if 3 in kwargslist:
+    if 3 in kwargsl:
         ruleprint += rules[2] + '\n\n'
-    if 4 in kwargslist:
+    if 4 in kwargsl:
         ruleprint += rules[3] + '\n\n'
-    if 5 in kwargslist:
+    if 5 in kwargsl:
         ruleprint += rules[4] + '\n\n'
-    if 6 in kwargslist:
+    if 6 in kwargsl:
         ruleprint += rules[5] + '\n\n'
-    if 7 in kwargslist:
+    if 7 in kwargsl:
         ruleprint += rules[6] # This one will never require the extra line breaks
 
     if 'help' in kwargs:
@@ -161,25 +207,26 @@ async def _rules(ctx, *kwargs):
         'To use this command type !rules followed by the numbers of the rules you wish to have listed,' +
         'or the keyword for the desired rule.\n\n'
         )
-        await commandlog(ctx, 'HELP\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
+        await commandlog(ctx, 'HELP', 'RULES')
         return
 
     # If the ruleprint is now empty we'll print a message and break off here
     if len(ruleprint) == 0:
         if len(kwargs) > 1:
             await ctx.channel.send(ctx.author.mention + ' None of those are real rules, you ignorant smud.')
+            print('uhh')
         else:
             await ctx.channel.send(ctx.author.mention + ' That\'s not a real rule, you ignorant smud.')
-        await commandlog(ctx, 'FAIL\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                        '\n\t\t\t\t\t' + 'None of the calls matched any rules: ' + str(kwargslist))
+
+        await commandlog(ctx, 'FAIL', 'RULES',
+                        ('None of the calls matched any rules: ' + str(kwargsl)))
         return
 
     # Finally, we're ready to post
     await ctx.channel.send(ruleprint)
-    await commandlog(ctx, 'SUCCESS\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                     '\n\t\t\t\t\t' + 'They called on rules: ' + str(kwargslist))
+    await commandlog(ctx, 'SUCCESS', 'RULES',
+                     ('They called on rules: ' + str(kwargsl)))
 
-########################
 ######### kick #########
 ### KICK FROM SERVER ###
 ########################
@@ -187,7 +234,6 @@ async def _rules(ctx, *kwargs):
 async def _kick(ctx, member: discord.Member):
     await not_implemented(ctx, 'kick')
 
-#################
 ##### mute ######
 ### MUTE USER ###
 #################
@@ -195,7 +241,6 @@ async def _kick(ctx, member: discord.Member):
 async def _mute(ctx, *kwargs):
     await not_implemented(ctx, 'mute')
 
-#############################
 ########### rps #############
 ### ROCK, PAPER, SCISSORS ###
 #############################
@@ -203,7 +248,6 @@ async def _mute(ctx, *kwargs):
 async def _rps(ctx, *kwargs):
     await not_implemented(ctx, 'rps')
 
-#####################
 ###### region #######
 ### SELECT REGION ###
 #####################
@@ -211,7 +255,6 @@ async def _rps(ctx, *kwargs):
 async def _region(ctx, *kwargs):
     await not_implemented(ctx, 'region')
 
-#######################
 ######## quote ########
 ### ADD/READ QUOTES ###
 #######################
@@ -219,7 +262,6 @@ async def _region(ctx, *kwargs):
 async def _quote(ctx, *kwargs):
     await not_implemented(ctx, 'quote')
 
-###################
 ###### vote #######
 ### CALL A VOTE ###
 ###################
@@ -227,7 +269,6 @@ async def _quote(ctx, *kwargs):
 async def _vote(ctx, *kwargs):
     await not_implemented(ctx, 'region')
 
-#######################
 ####### botnick #######
 ### CHANGE BOT NICK ###
 #######################
@@ -236,7 +277,6 @@ async def _botnick(ctx, *kwargs):
     await not_implemented(ctx, 'region')
 # discord.ClientUser.display_name
 
-##############################
 ############ temp ############
 ### TEMPERATURE CONVERSION ###
 ##############################
@@ -247,16 +287,16 @@ async def _temp(ctx, *kwargs):
         kwargs = ('help',)
 
     if kwargs[0] == 'help':
+        # TODO Write better help message
         await ctx.channel.send('**Example usage:**\n' +
                                '!temp 50 C or !temp 50 F')
-        await commandlog(ctx, 'HELP\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
+        await commandlog(ctx, 'HELP', 'TEMP')
         return
 
     elif len(kwargs) < 2:
         await ctx.channel.send('Hey there ' + ctx.author.mention + '! You need to specify both temperature and unit.\n' +
                                'Type !temp help for instructions.')
-        await commandlog(ctx, 'FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + 'Invalid formatting, command requires at least two arguments.')
+        await commandlog(ctx, 'FAIL', 'TEMP', 'Invalid formatting, command requires at least two arguments.')
         return
 
     else:
@@ -274,17 +314,15 @@ async def _temp(ctx, *kwargs):
         await ctx.channel.send('Hey there ' + ctx.author.mention + '! You forgot to specify a unit.\n' +
                                'Valid units are C for celcius and F for Fahrenheit.\n' +
                                'Type !temp help for instructions.')
-        await commandlog(ctx, 'FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + 'No unit specified.')
+        await commandlog(ctx, 'FAIL', 'TEMP', 'No unit specified.')
         return
 
     try:
         temp = float(temp)
     except ValueError:
-        await ctx.channel.send('You need to specify temperature first and original unit afterwards.' +
+        await ctx.channel.send(ctx.author.mention + ' You didn\'t specify a value for the temperature you wanted me to convert.\n' +
                                'Type !temp help for instructions.')
-        await commandlog(ctx, 'FAIL\t\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                             '\n\t\t\t\t\t' + 'Invalid formatting, command requires an integer.')
+        await commandlog(ctx, 'FAIL', 'TEMP', 'Invalid formatting, command requires an integer.')
         return
     else:
         if unit == 'c':
@@ -300,14 +338,13 @@ async def _temp(ctx, *kwargs):
         newtemp = float(newtemp) # ensures that the number isn't a fraction
         newtemp = round(newtemp,2) # rounds to two decimal points
         await ctx.channel.send(ctx.author.mention + ' ' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!' )
-        await commandlog(ctx, 'SUCCESS\tCommand "temp" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
-                         '\n\t\t\t\t\t' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!')
+        await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!'))
 
 @bot.command(name='source')
 async def _source(ctx, *kwargs):
     await ctx.channel.send('My source code is available at:\n' +
                            'https://github.com/kaminix/DrFreeze')
-    await commandlog(ctx, 'SUCCESS\tCommand "source" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
+    await commandlog(ctx, 'SUCCESS', 'SOURCE')
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
@@ -334,7 +371,7 @@ except:
 
 # Graceful exit
 def signal_handler(sig, frame):
-        print('You pressed Ctrl+C! I will now do like the tree, and get out of here.')
+        print('\n\nYou pressed Ctrl+C!\nI will now do like the tree, and get out of here.')
         sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 signal.pause()
