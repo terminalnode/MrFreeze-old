@@ -67,6 +67,24 @@ async def on_ready():
     for i in bot.guilds:
         await i.system_channel.send(':wave: ' + mrfreezequote())
 
+########## mrfreeze ###########
+### PRINT A MR FREEZE QUOTE ###
+###############################
+@bot.command(name='mrfreeze')
+async def _mrfreeze(ctx, *kwargs):
+    if len(kwargs) == 0:
+        await ctx.channel.send(mrfreezequote().replace('Batman', ctx.author.mention).replace('Gotham', ctx.channel.mention))
+    elif 'help' in kwargs or 'what' in kwargs or 'wtf' in kwargs or 'explanation' in kwargs:
+        await ctx.channel.send('*!mrfreeze* will post a dank Dr. Freeze quote from Batman & Robin. All instances of Batman are replaced with your name, and all instances of Gotham are replaced with the channel name.')
+    elif 'sucks' in kwargs or 'suck' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' No, *you* suck!')
+    else:
+        await ctx.channel.send('No, bad ' + ctx.author.mention + '!\nType only *!mrfreeze* for dank Mr. Freeze quotes, or *!mrfreeze* what for an explanation.')
+
+    if len(kwargs) == 0:
+        await commandlog(ctx, 'SUCCESS', 'MRFREEZE')
+    else:
+        await commandlog(ctx, 'SUCCESS', 'MRFREEZE', ('Arguments used: ' + str(kwargs)))
 
 ########## banish ##########
 ### BANISH TO ANTARCTICA ###
