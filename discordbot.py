@@ -63,6 +63,14 @@ async def _banish(ctx, member: discord.Member):
 async def _ban(ctx, *kwargs):
     await not_implemented(ctx, 'ban')
 
+#########################
+######## unban ##########
+### UNBAN FROM SERVER ###
+#########################
+@bot.command(name='unban')
+async def _ban(ctx, *kwargs):
+    await not_implemented(ctx, 'ban')
+
 #################
 ##### rules #####
 ### GET RULES ###
@@ -198,6 +206,14 @@ async def _rps(ctx, *kwargs):
 @bot.command(name='region')
 async def _region(ctx, *kwargs):
     await not_implemented(ctx, 'region')
+
+#######################
+######## quote ########
+### ADD/READ QUOTES ###
+#######################
+@bot.command(name='quote')
+async def _quote(ctx, *kwargs):
+    await not_implemented(ctx, 'quote')
 
 ###################
 ###### vote #######
