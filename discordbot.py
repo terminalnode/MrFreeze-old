@@ -44,8 +44,6 @@ async def on_ready():
 # Use this to create an error handler for bad arguments.
 # https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
 async def _banish(ctx, member: discord.Member):
-    print(type(member))
-    print(ctx.guild.name)
     if discord.utils.get(ctx.guild.roles, name='Administration') in ctx.author.roles:
         await commandlog('SUCCESS\tCommand "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                          '\n\t\t\t\t\t' + 'User ' + str(member.name) + "#"+ str(member.discriminator) + ' was banished.', ctx.guild.name)
@@ -73,61 +71,94 @@ async def _ban(ctx, *kwargs):
 #################
 @bot.command(name='rules')
 async def _rules(ctx, *kwargs):
-    prevrule = False
     ruleprint = str()
     rules = list()
     for line in open('rulesfile', 'r'):
         # .rstrip() strips each line of a trailing linebreak.
-        # When python
+        # When open() opens a textfile it escapes all \n (except actual
+        # line breaks in the file), .replace() here unescapes them.
         rules.append(line.rstrip().replace('\\n', '\n'))
 
-    def checkprevrule():
-        nonlocal prevrule
-        nonlocal ruleprint
-        if prevrule == True:
-            ruleprint += '\n\n'
-
     if not kwargs:
+        # If no arguments were specified the command will default to !rules help.
         kwargs = ('help',)
 
+    # Recreating kwargs as a list
+    kwargslist = []
+    for i in kwargs:
+        kwargslist.append(i)
+
+    for i in range(len(kwargslist)):
+        try:
+            if kwargslist[i] == 'all' and kwargslist[i+1] == 'rules':
+                kwargslist[i] = 'allrules'
+                kwargslist.pop(i+1)
+            elif kwargslist[i] == 'on' and kwargslist[i+1] == 'topic':
+                kwargslist[i] = 'ontopic'
+                kwargslist.pop(i+1)
+            elif kwargslist[i] == 'be' and kwargslist[i+1] == 'nice':
+                kwargslist[i] = 'benice'
+                kwargslist.pop(i+1)
+            elif kwargslist[i] == 'act' and kwargslist[i+1] == 'your' and kwargslist[i+2] == 'age':
+                kwargslist[i] == 'actyourage'
+                kwargslist.pop(i+1)
+                kwargslist.pop(i+2)
+        except IndexError:
+            pass
+
+
+    if 'allrules' in kwargslist:
+        # If the command is run to show all rules we simply edit it to have called all rules.
+        # It's cheating a bit, but it gets the job done.
+        kwargslist = [ 1, 2, 3, 4, 5, 6, 7 ]
+
+    # This is the key for different aliases by which you can call the rules
+    r_aliases = {
+        1: ['1', 'topic', 'ontopic'],
+        2: ['2', 'civil', 'behave'],
+        3: ['3', 'dismissive'],
+        4: ['4', 'jokes'],
+        5: ['5', 'shoes', 'age', 'act', 'actyourage', 'actage'],
+        6: ['6', 'spam'],
+        7: ['7', 'benice', 'nice']
+    }
+
+    # Using the dictionary r_aliases we will now replace the aliases by the correct rule number.
+    for i in range(len(r_aliases)):
+        rulenumber = i+1 # these are also the keys used in r_aliases
+        for rulealias in r_aliases[rulenumber]: # rulealias is the entry, rulenumber is the key/rule number
+            kwargslist = [ rulenumber if item == rulealias else item for item in kwargslist ]
+
+    # Discord will remove trailing line breaks when posting ruleprint,
+    # so we don't have to worry about adding too many.
+    if 1 in kwargslist:
+        ruleprint += rules[0] + '\n\n'
+    if 2 in kwargslist:
+        ruleprint += rules[1] + '\n\n'
+    if 3 in kwargslist:
+        ruleprint += rules[2] + '\n\n'
+    if 4 in kwargslist:
+        ruleprint += rules[3] + '\n\n'
+    if 5 in kwargslist:
+        ruleprint += rules[4] + '\n\n'
+    if 6 in kwargslist:
+        ruleprint += rules[5] + '\n\n'
+    if 7 in kwargslist:
+        ruleprint += rules[6] # This one will never require the extra line breaks
+
     if 'help' in kwargs:
-        ruleprint += ('**Rules**\n' +
+        ruleprint = ('**Rules**\n' +
         'Full list of rules are available in ' + discord.utils.get(ctx.guild.channels, name='rules').mention + '.\n'
         'To use this command type !rules followed by the numbers of the rules you wish to have listed,' +
-        'or the keyword for the desired rule.\n' +
-        '**Keywords:**\n\ntopic, ontopic, civil, dismissive, jokes, shoes, spam, benice, be nice, allrules, all rules'
+        'or the keyword for the desired rule.\n\n' +
         )
+
+    # If the ruleprint is now empty we'll print a message and break off here
+    if len(ruleprint) == 0:
+        await ctx.channel.send('None of your arguments matched any rules.')
         return
-    if 'allrules' in kwargs:
-        kwargs = ('1','2','3','4','5','6','7')
-    if '1' in kwargs:
-        checkprevrule()
-        ruleprint += rules[0]
-        prevrule = True
-    if '2' in kwargs:
-        checkprevrule()
-        ruleprint += rules[1]
-        prevrule = True
-    if '3' in kwargs:
-        checkprevrule()
-        ruleprint += rules[2]
-        prevrule = True
-    if '4' in kwargs:
-        checkprevrule()
-        ruleprint += rules[3]
-        prevrule = True
-    if '5' in kwargs:
-        checkprevrule()
-        ruleprint += rules[4]
-        prevrule = True
-    if '6' in kwargs:
-        checkprevrule()
-        ruleprint += rules[5]
-        prevrule = True
-    if '7' in kwargs:
-        checkprevrule()
-        ruleprint += rules[6]
-        prevrule = True
+
+    # Finally, we're ready to post
     await ctx.channel.send(ruleprint)
 
 ########################
