@@ -23,7 +23,7 @@ async def not_implemented(ctx, command):
 ###
 async def commandlog(ctx, newlog):
     t = time.asctime(time.gmtime())
-    commandlog = open('logs/commandlogs/' + ctx.guild.name + ' ' + str(ctx.guild.id), 'a')
+    commandlog = open('logs/commandlogs/' + ctx.guild.name.strip(' ') + '_' + str(ctx.guild.id), 'a')
     print (t + ' ' + newlog )
     commandlog.write(t + ' ' + newlog + '\n')
     commandlog.close()
@@ -83,7 +83,7 @@ async def _ban(ctx, *kwargs):
 async def _rules(ctx, *kwargs):
     ruleprint = str()
     rules = list()
-    for line in open('rulesfile', 'r'):
+    for line in open('config/rulesfile', 'r'):
         # .rstrip() strips each line of a trailing linebreak.
         # When open() opens a textfile it escapes all \n (except actual
         # line breaks in the file), .replace() here unescapes them.
