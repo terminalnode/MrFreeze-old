@@ -2,7 +2,7 @@
 import discord
 from discord.ext import commands
 import logging, os, asyncio
-import time, fractions
+import time, fractions, signal
 
 ### Cheat, how to make list comprehensions:
 ### [ expression for item in list if conditional ]
@@ -23,7 +23,7 @@ async def not_implemented(ctx, command):
 ###
 async def commandlog(ctx, newlog):
     t = time.asctime(time.gmtime())
-    commandlog = open('logs/commandlogs/' + ctx.guild.name.strip(' ') + '_' + str(ctx.guild.id), 'a')
+    commandlog = open('logs/cmd_' + ctx.guild.name + '_' + str(ctx.guild.id), 'a')
     print (t + ' ' + newlog )
     commandlog.write(t + ' ' + newlog + '\n')
     commandlog.close()
@@ -167,9 +167,9 @@ async def _rules(ctx, *kwargs):
     # If the ruleprint is now empty we'll print a message and break off here
     if len(ruleprint) == 0:
         if len(kwargs) > 1:
-            await ctx.channel.send(ctx.author.mention + ' None of those are real rules, you smud.')
+            await ctx.channel.send(ctx.author.mention + ' None of those are real rules, you ignorant smud.')
         else:
-            await ctx.channel.send(ctx.author.mention + ' That\'s not a real rule, you smud.')
+            await ctx.channel.send(ctx.author.mention + ' That\'s not a real rule, you ignorant smud.')
         await commandlog(ctx, 'FAIL\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
                         '\n\t\t\t\t\t' + 'None of the calls matched any rules: ' + str(kwargslist))
         return
@@ -231,8 +231,8 @@ async def _vote(ctx, *kwargs):
 ####### botnick #######
 ### CHANGE BOT NICK ###
 #######################
-@bot.command(name='vote')
-async def _vote(ctx, *kwargs):
+@bot.command(name='botnick')
+async def _botnick(ctx, *kwargs):
     await not_implemented(ctx, 'region')
 # discord.ClientUser.display_name
 
@@ -312,8 +312,8 @@ async def _source(ctx, *kwargs):
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
 # No one will ever read this...
-if not os.path.exists('logs/commandlogs/'):
-    os.makedirs('logs/commandlogs/')
+if not os.path.exists('logs/'):
+    os.makedirs('logs/')
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='logs/debug.log', encoding='utf-8', mode='w')
@@ -330,4 +330,12 @@ except:
     print ('\nERROR: BOT TOKEN MISSING\n' +
            'Please put your bot\'s token in a separate text file called \'token\'.\n' +
            'This file should be located in the same directory as the bot files.\n')
-    exit()
+    exit(0)
+
+# Graceful exit
+def signal_handler(sig, frame):
+        print('You pressed Ctrl+C!')
+        sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+print('Press Ctrl+C')
+signal.pause()
