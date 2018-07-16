@@ -6,6 +6,8 @@ import asyncio
 import time
 import fractions, decimal
 
+#test
+
 bot = commands.Bot(command_prefix='!')
 
 ###
@@ -106,12 +108,6 @@ async def _rules(ctx, *kwargs):
         except IndexError:
             pass
 
-
-    if 'allrules' in kwargslist:
-        # If the command is run to show all rules we simply edit it to have called all rules.
-        # It's cheating a bit, but it gets the job done.
-        kwargslist = [ 1, 2, 3, 4, 5, 6, 7 ]
-
     # This is the key for different aliases by which you can call the rules
     r_aliases = {
         1: ['1', 'topic', 'ontopic'],
@@ -122,6 +118,11 @@ async def _rules(ctx, *kwargs):
         6: ['6', 'spam'],
         7: ['7', 'benice', 'nice']
     }
+
+    if 'allrules' in kwargslist:
+        # If the command is run to show all rules we simply edit it to have called all rules.
+        # It's cheating a bit, but it gets the job done.
+        kwargslist = [ 1, 2, 3, 4, 5, 6, 7 ]
 
     # Using the dictionary r_aliases we will now replace the aliases by the correct rule number.
     for i in range(len(r_aliases)):
@@ -147,19 +148,25 @@ async def _rules(ctx, *kwargs):
         ruleprint += rules[6] # This one will never require the extra line breaks
 
     if 'help' in kwargs:
-        ruleprint = ('**Rules**\n' +
+        await ctx.channel.send('**Rules**\n' +
         'Full list of rules are available in ' + discord.utils.get(ctx.guild.channels, name='rules').mention + '.\n'
         'To use this command type !rules followed by the numbers of the rules you wish to have listed,' +
-        'or the keyword for the desired rule.\n\n' +
+        'or the keyword for the desired rule.\n\n'
         )
+        await commandlog('HELP\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id))
+        return
 
     # If the ruleprint is now empty we'll print a message and break off here
     if len(ruleprint) == 0:
         await ctx.channel.send('None of your arguments matched any rules.')
+        await commandlog('FAIL\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                        '\n\t\t\t\t\t' + 'None of the calls matched any rules: ' + kwargslist, ctx.guild.name)
         return
 
     # Finally, we're ready to post
     await ctx.channel.send(ruleprint)
+    await commandlog('SUCCESS\t\tCommand "rules" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id) +
+                     '\n\t\t\t\t\t' + 'They called on rules: ' + kwargslist, ctx.guild.name)
 
 ########################
 ######### kick #########
