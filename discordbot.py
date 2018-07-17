@@ -486,7 +486,7 @@ async def _vote(ctx, *kwargs):
                 await ctx.message.add_reaction(alternatives[i][0])
                 did_react = True
             except:
-                print ('Tried with: ' + alternatives[i])
+                pass
 
     if did_react == True:
         await ctx.channel.send(ctx.author.mention + ' That\'s such a great proposition that I voted for everything!')
