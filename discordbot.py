@@ -133,24 +133,66 @@ async def _mrfreeze(ctx, *kwargs):
 @bot.command(name='banish')
 # Use this to create an error handler for bad arguments.
 # https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
-async def _banish(ctx, member: discord.Member):
-    if await is_mod(ctx):
-        await commandlog(ctx, 'SUCCESS', 'BANISH', ('User ' + str(member.name) + "#"+ str(member.discriminator) + ' was banished.'))
-        await ctx.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
-        await member.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
-        await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
-        await member.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
-    else:
+async def _banish(ctx, *kwargs):
+    # If the kwargs are empty or only containing 'help' we'll show the help message.
+    if not kwargs:
+        kwargs = ('help',)
+    if kwargs[0] == 'help':
+        await ctx.channel.send('Just type !banish followed by the user(s) you wish to banish.')
+        await commandlog(ctx, 'HELP', 'BANISH')
+        return
+
+    # Non-mod users can ask for help on how to use the command, but that's it.
+    if await is_mod(ctx) == False:
         await commandlog(ctx, 'FAIL', 'BANISH',
-                        ('User did not have sufficient privilegies to banish ' + str(member.name) + '#' + str(member.discriminator)))
-
-        await ctx.channel.send('You\'re not  allowed to banish people ' +
-                               ', you will now be banished for your transgressions.'.format(ctx) +
-                               '\n' + ctx.author.mention + ' will be banished to the frozen hells of Antarctica for 7 minutes!')
-
+                        ('User did not have sufficient privilegies to banish ' + str(ctx.message.mentions)))
+        await ctx.channel.send('Ignorant smud, you\'re not  allowed to banish people, you will now yourself be banished for your transgressions.\n'.format(ctx) +
+                               ctx.author.mention + ' will be banished to the frozen hells of Antarctica for 7 minutes!')
         await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
-        await asyncio.sleep(5*60) # 5*60 seconds = 5 minutes
-        await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+        await asyncio.sleep(7*60) # 7*60 seconds = 7 minutes
+        await member.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+        return
+
+    # Now let's extract all the users from the mentions.
+    victims = ctx.message.mentions
+
+    # If no victims were found, the author can go fuck themselves.
+    if len(victims) == 0:
+        await ctx.channel.send(ctx.author.mention + ' Bruh, you need to specify someone to banish by mentioning them. ' +
+                                                    'It\'s not that hard. Type \'!banish help\' if you need someone to hold your hand.')
+        await commandlog(ctx, 'FAIL', 'BANISH', 'No victims specified in arguments: ' + str(kwargs))
+        return
+
+    # Now, let's go through the list.
+    victim_mentions = str() # for when we're listing the victims later on.
+    for victim in victims:
+        if len(victims) > 1:
+            if victims[-2] == victim:
+                victim_mentions += (victim.mention + ' and ')
+            else:
+                victim_mentions += (victim.mention + ', ')
+        else:
+            victim_mentions += victim.mention
+        await victim.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+
+    victim_mentions = victim_mentions.strip(', ')
+    # Singular and plural...
+    end_string = 'They will be stuck in that frozen hell for a good 5 minutes!'
+    if len(victims) == 1:
+        await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smud ' + victim_mentions + ' has been banished! ' + end_string)
+    else:
+        await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smuds ' + victim_mentions + ' have been banished! ' + end_string)
+    await commandlog(ctx, 'SUCCESS', 'BANISH', ('Victims: ' + str(victims)))
+
+    # Let's not forget to unbanish them...
+    await asyncio.sleep(5*60)
+    for victim in victims:
+        await victim.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+
+    if len(victims) == 1:
+        await ctx.channel.send('It\'s with great regreat that I must inform you all, that the filthy smud ' + victim_mentions + ' now is back from Antarctica.')
+    else:
+        await ctx.channel.send('It\'s with great regreat that I must inform you all, that the filthy smuds ' + victim_mentions + ' now are back from Antarctica.')
 
 ######## ban ##########
 ### BAN FROM SERVER ###
@@ -453,7 +495,6 @@ async def _vote(ctx, *kwargs):
     # Defaults to help if lacking arguments
     if not kwargs:
         kwargs = ('help',)
-    print(kwargs[0])
     if len(kwargs) == 1 and kwargs[0].lower() == 'help':
         helpmessage= await ctx.channel.send(ctx.author.mention + ' To make a vote you start your message with !vote, ' +
                               'followed by one or more lines with your suggestion, ' +
