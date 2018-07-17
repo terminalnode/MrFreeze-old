@@ -399,8 +399,8 @@ async def _region(ctx, *kwargs):
         await commandlog(ctx, 'HELP', 'REGION', 'Asked for region list.')
         return
 
-    if 'antarctica' in kwargs or 'antartica' in kwargs or 'anartica' in kwargs:
-        if 'antartica' in kwargs or 'anartica' in kwargs:
+    if 'antarctica' in kwargs or 'antartica' in kwargs or 'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs:
+        if 'antartica' in kwargs or 'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs:
             await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in what they\'re calling "' + kwargmerge + '"! ' +
                                   'They can\'t even spell it right!\nUsually I\'d only give them ten minutes in that frozen hell, but for this... ' +
                                   'TWENTY minutes in penguin school!')
@@ -408,7 +408,7 @@ async def _region(ctx, *kwargs):
             await asyncio.sleep(1200) # 10*60 seconds = 10 minutes
             await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
         else:
-            await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in Antarctica!!\n ' +
+            await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in Antarctica!!\n' +
                                   'I\'ll give them what they want and banish them to that frozen hell for ten minutes!')
             await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
             await asyncio.sleep(600) # 10*60 seconds = 10 minutes
