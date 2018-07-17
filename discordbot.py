@@ -83,6 +83,8 @@ async def on_ready():
     print ('-----------')
     for i in bot.guilds:
         await i.system_channel.send(':wave: ' + mrfreezequote())
+    await bot.change_presence(status=None, activity=
+        discord.Activity(name='your commands...', type=discord.ActivityType.listening))
 
 ########## mrfreeze ###########
 ### PRINT A MR FREEZE QUOTE ###
@@ -302,7 +304,26 @@ async def _quote(ctx, *kwargs):
 ###################
 @bot.command(name='vote')
 async def _vote(ctx, *kwargs):
-    await not_implemented(ctx, 'region')
+    await not_implemented(ctx, 'vote')
+
+######### activity #########
+### CHANGES BOT ACTIVITY ###
+############################
+@bot.command(name='activity')
+async def _activity(ctx, *kwargs):
+    descriptor = str()
+    for i in kwargs:
+        descriptor += (i + ' ')
+    descriptor.strip()
+
+    if len(descriptor) > 30:
+        await ctx.channel.send('That activity is stupidly long. Limit is 30 characters.')
+        await commandlog(ctx, 'FAIL', 'ACTIVITY', 'Suggested activity was too long.')
+
+    new_activity = discord.Game(descriptor)
+    await bot.change_presence(status=None, activity=new_activity)
+    await ctx.channel.send(ctx.author.mention + ' \*sigh\* activity changed...')
+    await commandlog(ctx, 'SUCCESS', 'ACTIVITY', ('Bot activity changed to: ' + descriptor))
 
 ####### botnick #######
 ### CHANGE BOT NICK ###

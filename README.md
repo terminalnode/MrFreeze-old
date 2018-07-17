@@ -18,6 +18,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
 * **!source**   - Posts a link to this github page.
 * **!mrfreeze** - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
+* **!activity** - Changes the activity of the bot ('Playing [...]')
 
 ### Currently working on
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
