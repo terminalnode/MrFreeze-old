@@ -450,7 +450,52 @@ async def _quote(ctx, *kwargs):
 ###################
 @bot.command(name='vote')
 async def _vote(ctx, *kwargs):
-    await not_implemented(ctx, 'vote')
+    # Defaults to help if lacking arguments
+    if not kwargs:
+        kwargs = (help,)
+    if len(kwargs) == 1 and kwargs[0].lower() == 'help':
+        await ctx.channel.send(ctx.author.mention + ' To make a vote you start your message with !vote, followed by one or more lines with your suggestion, ' +
+                              'then add one line for each of your alternatives starting each alternative of with an emoji. ' +
+                              'Server emojis work but nitro emojis don\'t.\n\n' +
+                              '!vote What killed the dinosaurs?\n:ice_cream: The Ice Age!\n:ghost: Mr. Freeze')
+        await commandlog(ctx, 'HELP', 'VOTE')
+        return
+
+    alternatives = (ctx.message.content.split('\n'))[1:]
+    if len(alternatives) == 0:
+        await ctx.channel.send('Need at least two lines to make a vote buddy.')
+        await commandlog(ctx, 'FAIL', 'VOTE', 'Need at least two lines to make a vote.')
+        return
+
+    did_react = False
+    # Going through all but the first line of the message.
+    # First line is never gonna be part of the vote.
+    for i in range(len(alternatives)):
+        if alternatives[i][0:8] == '<:emoji:': # identifying custom emojis
+            try:
+                emoji_id = alternatives[i][8:26]
+                for i in ctx.guild.emojis:
+                    if emoji_id == i.id:
+                        emoji = i
+                await ctx.message.add_reaction(i)
+                did_react = True
+            except:
+                commandlog(ctx, '????', 'VOTE', 'Fucking nitro users screwing with me.')
+        else:
+            try:
+                await ctx.message.add_reaction(alternatives[i][0])
+                did_react = True
+            except:
+                print ('Tried with: ' + alternatives[i])
+
+    if did_react == True:
+        await ctx.channel.send(ctx.author.mention + ' That\'s such a great proposition that I voted for everything!')
+        await commandlog(ctx, 'SUCCESS', 'VOTE')
+    else:
+        await ctx.channel.send(ctx.author.mention +
+                        ' I couldn\'t find any alternatives to vote for, so I didn\'t vote for anything.')
+        await commandlog(ctx, 'FAIL', 'VOTE', 'No lines starting with emoji were found.')
+        return
 
 ######### activity #########
 ### CHANGES BOT ACTIVITY ###

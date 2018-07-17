@@ -11,7 +11,7 @@ Not wanting to upload the token of my bot to github this is read from a separate
 ## Available commands
 Below is a list of implemented and planned commands, as well as what I'm currently working on. (Owner) indicates that only I can do it, if you want to use the command you have to run a separate bot and edit the ID that is allowed to do it. (Mod) indicates that only mods are allowed to issue the command.
 
-### Fully implemented
+### Fully implemented (as far as I know)
 * **!restart**  - (Owner) Restarts the bot completely. Very useful for testing new code.
 * **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
@@ -20,7 +20,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!mrfreeze** - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
 * **!activity** - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
-
+* **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
 
 ### Currently working on
 * Not sure.
@@ -34,4 +34,3 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!quote**    - (Mod) Add, delete, and read random quotes.
 * **!rps**      - Play rock, paper, scissors with the bot.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
-* **!vote**     - Creates a vote where users vote by reacting with specified emoji.
