@@ -182,7 +182,7 @@ async def _banish(ctx, *kwargs):
         await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smud ' + victim_mentions + ' has been banished! ' + end_string)
     else:
         await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smuds ' + victim_mentions + ' have been banished! ' + end_string)
-    await commandlog(ctx, 'SUCCESS', 'BANISH', ('Victims: ' + str(victims)))
+    await commandlog(ctx, 'SUCCESS', 'BANISH', ('Victims: ' + str( [ x.name + '#' + x.discriminator for x in victims ] )))
 
     # Let's not forget to unbanish them...
     await asyncio.sleep(5*60)
@@ -518,7 +518,7 @@ async def _vote(ctx, *kwargs):
     for i in range(len(alternatives)):
         if alternatives[i][0:8] == '<:emoji:': # identifying custom emojis
             try:
-                emoji_id = alternatives[i][8:26]
+                emoji_id = alternatives[i][8:26] # TODO Make regex :nauseated:
                 for i in ctx.guild.emojis:
                     if emoji_id == i.id:
                         emoji = i
