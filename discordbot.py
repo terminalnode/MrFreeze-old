@@ -43,6 +43,7 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
 
     # First we'll print the time and whether the command was successful or not.
     t = time.asctime(time.gmtime())
+
     if log_category == 'SUCCESS':
         logentry = t + ' SUCCESS\t'
 
@@ -52,9 +53,15 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
     elif log_category == 'HELP':
         logentry = t + ' HELP\t\t'
 
+    elif log_category == 'TROLL':
+        logentry = t + 'TROLL\t\t'
+
+    else:
+        logentry = t + '????\t\t'
+
     # Second part will be 1) who issued the command, 2) which command was it.
     # Command "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id)
-    logentry += 'Command \'' + used_command + '\' issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id)
+    logentry += 'Command ' + used_command + ' issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id)
 
     # For some commands a comment on what exactly happened is added to the log.
     # Each kwarg corresponds to one line, which will be one list entry in commentl.
@@ -85,6 +92,35 @@ async def on_ready():
         await i.system_channel.send(':wave: ' + mrfreezequote())
     await bot.change_presence(status=None, activity=
         discord.Activity(name='your commands...', type=discord.ActivityType.listening))
+
+    # These region IDs will later be used in the !region command
+    # creating this now so we won't have to do a bunch of API-calls later.
+    global server_region_roles
+    server_region_roles = dict()
+    for s_guild in bot.guilds:
+        server_region_roles[s_guild.id] = {
+            'Asia':             discord.utils.get(s_guild.roles, name='Asia').id,
+            'Europe':           discord.utils.get(s_guild.roles, name='Europe').id,
+            'North America':    discord.utils.get(s_guild.roles, name='North America').id,
+            'Africa':           discord.utils.get(s_guild.roles, name='Africa').id,
+            'Oceania':          discord.utils.get(s_guild.roles, name='Oceania').id,
+            'South America':    discord.utils.get(s_guild.roles, name='South America').id,
+            'Middle East':      discord.utils.get(s_guild.roles, name='Middle East').id
+        }
+
+#    for i in bot.guilds:
+#        region_ids = region_ids.append(
+#            i.id():
+#            { server_region_ids = {
+#                'Asia': discord.utils.get(ctx.guild.roles, name='Asia').id(),
+#                'Europe': discord.utils.get(ctx.guild.roles, name='Europe').id(),
+#                'Northamerica': discord.utils.get(ctx.guild.roles, name='North America').id(),
+#                'Africa': discord.utils.get(ctx.guild.roles, name='Africa').id(),
+#                'Oceania': discord.utils.get(ctx.guild.roles, name='Oceania').id(),
+#                'South America': discord.utils.get(ctx.guild.roles, name='South America').id(),
+#                'Middle East': discord.utils.get(ctx.guild.roles, name='Middle East').id()
+#                }
+#            }
 
 ########## mrfreeze ###########
 ### PRINT A MR FREEZE QUOTE ###
@@ -290,7 +326,131 @@ async def _rps(ctx, *kwargs):
 #####################
 @bot.command(name='region')
 async def _region(ctx, *kwargs):
-    await not_implemented(ctx, 'region')
+    # on_ready we created a dictionary with all the region ids:
+    global server_region_roles
+    region_ids = server_region_roles[ctx.guild.id]
+
+    # Check that there are indeed kwargs here.
+    if not kwargs:
+        kwargs = ('help',)
+
+    # This is in case we need to read back to them what they wrote.
+    kwargmerge = str()
+    for i in kwargs:
+        kwargmerge += i + ' '
+    kwargmerge = kwargmerge.strip()
+
+    # Merge two-part arguments:
+    kwargs = list(kwargs)
+    for i in range(len(kwargs)):
+        if kwargs[i] == 'united':
+            if kwargs[i+1] == 'states':
+                kwargs[i] = 'unitedstates'
+                kwargs.pop(i+1)
+
+            elif kwargs[i+1] == 'kingdom':
+                kwargs[i] = 'unitedkingdom'
+                kwargs.pop(i+1)
+
+        elif kwargs[i] == 'great':
+            if kwargs[i+1] == 'britain' or kwargs[i+1] == 'brittain':
+                kwargs[i] = 'greatbritain'
+                kwargs.pop(i+1)
+
+        elif kwargs[i] == 'north':
+            if kwargs[i+1] == 'america' or kwargs[i+1] == 'murica':
+                kwargs[i] = 'northamerica'
+                kwargs.pop(i+1)
+
+        elif kwargs[i] == 'south':
+            if kwargs[i+1] == 'america' or kwargs[i+1] == 'murica':
+                kwargs[i] = 'southamerica'
+                kwargs.pop(i+1)
+
+            elif kwargs[i+1] == 'korea':
+                kwargs[i] = 'asia'
+                kwargs.pop(i+1)
+
+            elif kwargs[i+1] == 'korea':
+                kwargs[i] = 'asia'
+                kwargs.pop(i+1)
+
+        elif kwargs[i] == 'new':
+            if kwargs[i+1] == 'zeeland' or kwargs[i+1] == 'zealand' or kwargs[i+1] == 'zeland':
+                kwargs[i] = 'newzealand'
+                kwargs.pop(i+1)
+
+        if kwargs[i] == 'middle':
+            if kwargs[i+1] == 'east':
+                kwargs[i] = 'middleeast'
+                kwargs[i+1].pop()
+        if i == len(kwargs) - 1:
+            break
+
+    # Let's end this here and now if the user just wanted help.
+    if 'help' in kwargs:
+        await ctx.channel.send(open('config/regionhelp', 'r').read())
+        await commandlog(ctx, 'HELP', 'REGION', 'Asked for help.')
+        return
+
+    if 'list' in kwargs:
+        await ctx.channel.send('Available regions are:\n' +
+        ' - Asia\n - Europe\n - North America\n - South America\n - Africa\n - Oceania\n - Middle East')
+        await commandlog(ctx, 'HELP', 'REGION', 'Asked for region list.')
+        return
+
+    if 'antarctica' in kwargs or 'antartica' in kwargs or 'anartica' in kwargs:
+        if 'antartica' in kwargs or 'anartica' in kwargs:
+            await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in what they\'re calling "' + kwargmerge + '"! ' +
+                                  'They can\'t even spell it right!\nUsually I\'d only give them ten minutes in that frozen hell, but for this... ' +
+                                  'TWENTY minutes in penguin school!')
+            await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+            await asyncio.sleep(1200) # 10*60 seconds = 10 minutes
+            await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+        else:
+            await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in Antarctica!!\n ' +
+                                  'I\'ll give them what they want and banish them to that frozen hell for ten minutes!')
+            await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+            await asyncio.sleep(600) # 10*60 seconds = 10 minutes
+            await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+        await commandlog(ctx, 'TROLL', 'REGION', 'Claimed to live in Antarctica.')
+        return
+
+    # These are our regions and a bunch of aliases
+    regional_aliases = {
+    'Asia':             ['asia', 'china', 'japan', 'thailand', 'korea'],
+    'Europe':           ['europe', 'evropa', 'unitedkingdom', 'gb', 'greatbritain', 'scandinavia', 'germany', 'sweden', 'norway', 'spain', 'france', 'italy',
+                        'ireland', 'poland', 'russia', 'finland', 'estonia', 'scotland', 'scottland', 'portugal'],
+    'North America':    ['northamerica', 'america', 'us', 'canada', 'mexico', 'na', 'usa', 'amercia', 'unitedstates'],
+    'Africa':           ['africa', 'kongo', 'uganda'],
+    'Oceania':          ['oceania', 'australia', 'newzealand'],
+    'South America':    ['southamerica', 'argentina', 'chile', 'brazil', 'peru'],
+    'Middle East':      ['middleeast', 'middle-east', 'mesa', 'saudi', 'saudiarabia', 'arabia', 'arabian']
+    }
+
+    # First we'll get all roles the user currently has with all regions removed.
+    author_roles = [ i.id for i in ctx.author.roles if i.id not in region_ids.values() ]
+    new_author_roles = [ i.id for i in ctx.author.roles if i.id not in region_ids.values() ]
+
+    for region in regional_aliases:
+        for alias in regional_aliases[region]:
+            if alias in kwargs:
+                new_author_roles.append(region_ids[region])
+                new_role_name = region
+
+
+    if author_roles == new_author_roles:
+        await ctx.channel.send(ctx.author.mention + ' I couldn\'t find any match for ' + kwargmerge + '.\n'
+                              'Please check your spelling or type \'!region list\' for a list of available regions.')
+        await commandlog(ctx, 'FAIL', 'REGION', 'No match for: ' + kwargmerge)
+        return
+
+    new_roles = list()
+    for i in range(len(new_author_roles)):
+        new_author_roles[i] = discord.Object(id = new_author_roles[i])
+    await ctx.author.edit(roles=new_author_roles)
+    await ctx.channel.send(ctx.author.mention + 'You\'ve been assigned a new role, welcome to ' + new_role_name + '!')
+    await commandlog(ctx, 'SUCCESS', 'REGION', ('They got assigned to: ' + new_role_name))
 
 ######## quote ########
 ### ADD/READ QUOTES ###
@@ -311,6 +471,11 @@ async def _vote(ctx, *kwargs):
 ############################
 @bot.command(name='activity')
 async def _activity(ctx, *kwargs):
+    if not kwargs:
+        await ctx.channel.send(ctx.author.mention + ' You didn\'t specify an activity you foul smud.')
+        await commandlog(ctx, 'FAIL', 'ACTIVITY', 'Didn\'t specify an activity (no arguments).')
+        return
+
     descriptor = str()
     for i in kwargs:
         descriptor += (i + ' ')
@@ -319,6 +484,7 @@ async def _activity(ctx, *kwargs):
     if len(descriptor) > 30:
         await ctx.channel.send('That activity is stupidly long. Limit is 30 characters.')
         await commandlog(ctx, 'FAIL', 'ACTIVITY', 'Suggested activity was too long.')
+        return
 
     new_activity = discord.Game(descriptor)
     await bot.change_presence(status=None, activity=new_activity)

@@ -19,9 +19,11 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!source**   - Posts a link to this github page.
 * **!mrfreeze** - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
 * **!activity** - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
+* **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
+
 
 ### Currently working on
-* **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
+* Not sure.
 
 ### Planned but not yet implemented
 * **!ban**      - (Mod) Bans the user from the server.
