@@ -18,6 +18,23 @@ async def not_implemented(ctx, command):
     return
 
 ###
+### Returns True if the author is a mod, otherwise False
+###
+async def is_mod(ctx):
+    return(discord.utils.get(ctx.guild.roles, name='Administration') in ctx.author.roles)
+
+###
+### Looks through config/files for URL of a picture matching the file name.
+###
+def get_image(desired):
+    for i in open('config/files', 'r'):
+        currentimage = i.strip().split(' ')
+
+        if currentimage[0] == desired:
+            return currentimage[1]
+    return 'https://imgur.com/pgNlDLT' # This is the NoImage file
+
+###
 ### This will be used to both print a message to the terminal
 ### as well as put it down in a log.
 ###
@@ -93,7 +110,7 @@ async def _mrfreeze(ctx, *kwargs):
 # Use this to create an error handler for bad arguments.
 # https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
 async def _banish(ctx, member: discord.Member):
-    if discord.utils.get(ctx.guild.roles, name='Administration') in ctx.author.roles:
+    if await is_mod(ctx):
         await commandlog(ctx, 'SUCCESS', 'BANISH', ('User ' + str(member.name) + "#"+ str(member.discriminator) + ' was banished.'))
         await ctx.channel.send(member.mention + ' will be banished to the frozen hells of Antarctica for 5 minutes!')
         await member.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
@@ -292,8 +309,22 @@ async def _vote(ctx, *kwargs):
 #######################
 @bot.command(name='botnick')
 async def _botnick(ctx, *kwargs):
-    await not_implemented(ctx, 'region')
-# discord.ClientUser.display_name
+    newnick = str()
+    for i in range(len(kwargs)):
+        if i != 0:
+            newnick += ' '
+        newnick += kwargs[i]
+    if len(newnick) <= 32:
+        if await is_mod(ctx):
+            await ctx.ClientUser.edit(nick = newnick)
+            await ctx.channel.send(ctx.author.mention + ' Yes my lord, I will henceforth be known by the name of \'' + newnick + '\'.')
+            await commandlog(ctx, 'SUCCESS', 'BOTNICK', ('Bot nick was changed to: ' + newnick))
+        else:
+            await ctx.channel.send(ctx.author.mention + ' Smuds like you aren\'t allowed to change my nick.')
+            await commandlog(ctx, 'FAIL', 'BOTNICK', 'Insufficient privilegies.')
+    else:
+        await ctx.channel.send(ctx.author.mention + ' that nick is too damn long.')
+        await commandlog(ctx, 'FAIL', 'BOTNICK', 'Suggested nick is too long.')
 
 ############ temp ############
 ### TEMPERATURE CONVERSION ###
@@ -355,8 +386,26 @@ async def _temp(ctx, *kwargs):
             t_target = ' °C'
         newtemp = float(newtemp) # ensures that the number isn't a fraction
         newtemp = round(newtemp,2) # rounds to two decimal points
-        await ctx.channel.send(ctx.author.mention + ' ' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!' )
-        await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!'))
+
+        # This is the message we will print:
+        full_temp_message = (ctx.author.mention + ' ' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!')
+
+        # At this point, we're adding a small gif of a dog saying Welcome to Hell
+        # If the temperature in celcius is above a certain threshold.
+        hell_threshold = 35
+        above_threshold = False
+        if (t_origin == ' °C' and temp >= hell_threshold) or (t_origin == ' °F' and newtemp >= hell_threshold):
+            above_threshold = True
+
+        # Finally, we're ready to print the message:
+        if above_threshold == True:
+            image = discord.Embed().set_image(url=get_image('WelcomeToHell'))
+            await ctx.channel.send(full_temp_message, embed=image)
+            await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!' +
+                            ' Hell dog awoken.'))
+        else:
+            await ctx.channel.send(full_temp_message)
+            await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!'))
 
 @bot.command(name='source')
 async def _source(ctx, *kwargs):
