@@ -452,12 +452,16 @@ async def _quote(ctx, *kwargs):
 async def _vote(ctx, *kwargs):
     # Defaults to help if lacking arguments
     if not kwargs:
-        kwargs = (help,)
+        kwargs = ('help',)
+    print(kwargs[0])
     if len(kwargs) == 1 and kwargs[0].lower() == 'help':
-        await ctx.channel.send(ctx.author.mention + ' To make a vote you start your message with !vote, followed by one or more lines with your suggestion, ' +
+        helpmessage= await ctx.channel.send(ctx.author.mention + ' To make a vote you start your message with !vote, ' +
+                              'followed by one or more lines with your suggestion, ' +
                               'then add one line for each of your alternatives starting each alternative of with an emoji. ' +
                               'Server emojis work but nitro emojis don\'t.\n\n' +
                               '!vote What killed the dinosaurs?\n:ice_cream: The Ice Age!\n:ghost: Mr. Freeze')
+        await helpmessage.add_reaction('🍨')
+        await helpmessage.add_reaction('👻')
         await commandlog(ctx, 'HELP', 'VOTE')
         return
 
