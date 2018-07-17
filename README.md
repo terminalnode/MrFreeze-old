@@ -22,13 +22,13 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
 
-### Currently working on
-* Not sure.
+### Next up
+* **!dmcl**     - (Mod) DM commandlog file for the current server to author.
+* **!kick**     - (Mod) Kicks the user from the server.
 
 ### Planned but not yet implemented
 * **!ban**      - (Mod) Bans the user from the server.
 * **!unban**    - (Mod) Removes ban from the server.
-* **!kick**     - (Mod) Kicks the user from the server.
 * **!mute**     - (Mod) Mutes the user.
 * **!botnick**  - (Mod) Changes the nick of the bot.
 * **!quote**    - (Mod) Add, delete, and read random quotes.

@@ -202,6 +202,15 @@ async def _ban(ctx, *kwargs):
     await not_implemented(ctx, 'ban')
     # Do not forget to add a register over banned user IDs for unban.
 
+######## dmcl ########
+### DM COMMAND LOG ###
+######################
+# mod only
+# should also have an option to delete the old commandlog
+@bot.command(name='dmcl')
+async def _dmcl(ctx, *kwargs):
+    await not_implemented(ctx, 'dmcl')
+
 ######## unban ##########
 ### UNBAN FROM SERVER ###
 #########################
@@ -564,7 +573,7 @@ async def _activity(ctx, *kwargs):
 
     new_activity = discord.Game(descriptor)
     await bot.change_presence(status=None, activity=new_activity)
-    await ctx.channel.send(ctx.author.mention + ' \*sigh\* activity changed...')
+    await ctx.channel.send(ctx.author.mention + ' \*sigh\* I guess I\'m \'playing ' + descriptor + '\' then...')
     await commandlog(ctx, 'SUCCESS', 'ACTIVITY', ('Bot activity changed to: ' + descriptor))
 
 ####### botnick #######
