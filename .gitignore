@@ -1,3 +1,4 @@
-/token
-/logs
-/experimentation.py
+token
+logs
+experimentation.py
+.DS_Store
