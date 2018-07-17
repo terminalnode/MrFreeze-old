@@ -54,10 +54,10 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
         logentry = t + ' HELP\t\t'
 
     elif log_category == 'TROLL':
-        logentry = t + 'TROLL\t\t'
+        logentry = t + ' TROLL\t\t'
 
     else:
-        logentry = t + '????\t\t'
+        logentry = t + ' ????\t\t'
 
     # Second part will be 1) who issued the command, 2) which command was it.
     # Command "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id)
@@ -107,20 +107,6 @@ async def on_ready():
             'South America':    discord.utils.get(s_guild.roles, name='South America').id,
             'Middle East':      discord.utils.get(s_guild.roles, name='Middle East').id
         }
-
-#    for i in bot.guilds:
-#        region_ids = region_ids.append(
-#            i.id():
-#            { server_region_ids = {
-#                'Asia': discord.utils.get(ctx.guild.roles, name='Asia').id(),
-#                'Europe': discord.utils.get(ctx.guild.roles, name='Europe').id(),
-#                'Northamerica': discord.utils.get(ctx.guild.roles, name='North America').id(),
-#                'Africa': discord.utils.get(ctx.guild.roles, name='Africa').id(),
-#                'Oceania': discord.utils.get(ctx.guild.roles, name='Oceania').id(),
-#                'South America': discord.utils.get(ctx.guild.roles, name='South America').id(),
-#                'Middle East': discord.utils.get(ctx.guild.roles, name='Middle East').id()
-#                }
-#            }
 
 ########## mrfreeze ###########
 ### PRINT A MR FREEZE QUOTE ###
@@ -179,7 +165,7 @@ async def _ban(ctx, *kwargs):
 #########################
 @bot.command(name='unban')
 async def _ban(ctx, *kwargs):
-    await not_implemented(ctx, 'ban')
+    await not_implemented(ctx, 'unban')
 
 ####### restart #######
 ### RESTART THE Bot ###
@@ -400,6 +386,7 @@ async def _region(ctx, *kwargs):
         return
 
     if 'antarctica' in kwargs or 'antartica' in kwargs or 'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs:
+        await commandlog(ctx, 'TROLL', 'REGION', 'Claimed to live in Antarctica.')
         if 'antartica' in kwargs or 'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs:
             await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in what they\'re calling "' + kwargmerge + '"! ' +
                                   'They can\'t even spell it right!\nUsually I\'d only give them ten minutes in that frozen hell, but for this... ' +
@@ -413,7 +400,6 @@ async def _region(ctx, *kwargs):
             await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
             await asyncio.sleep(600) # 10*60 seconds = 10 minutes
             await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
-        await commandlog(ctx, 'TROLL', 'REGION', 'Claimed to live in Antarctica.')
         return
 
     # These are our regions and a bunch of aliases
