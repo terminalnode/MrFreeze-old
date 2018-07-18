@@ -283,7 +283,7 @@ async def _dmcl(ctx, *kwargs):
 @bot.command(name='restart')
 async def _restart(ctx, *kwargs):
     if ctx.author.id == 154516898434908160: # This is my discord user ID. If you're modifying this, change to your ID.
-        await ctx.channel.send(ctx.author.mention + " Yes boss... I will restart now.")
+        await ctx.channel.send(ctx.author.mention + " Yes Dear Leader... I will restart now.")
         await commandlog(ctx, 'SUCCESS', 'RESTART')
         print ('\n') # extra new line after the commandlog() output
         os.execl(sys.executable, sys.executable, *sys.argv)
