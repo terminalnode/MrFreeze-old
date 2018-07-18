@@ -27,6 +27,32 @@ def get_image(desired):
     return 'https://imgur.com/pgNlDLT' # This is the NoImage file
 
 ###
+### Function to extract mentions from a list of users (e.g. from ctx.message.mentions)
+###
+def get_mentions(users):
+    new_list = str()
+    for i in users:
+        if len(users) > 1:
+            if users[-2] == i:
+                new_list += (i.mention + ' and ')
+            else:
+                new_list += (i.mention + ', ')
+        else:
+            new_list += i.mention
+    new_list = new_list.strip(', ')
+    return new_list
+
+###
+### Function to make the kwargs into a list and make them lowercase
+###
+def list_kwargs(old_kwargs):
+    old_kwargs = list(old_kwargs)
+    kwargs = list()
+    for i in old_kwargs:
+        kwargs.append(i.lower())
+    return kwargs
+
+###
 ### This will be used to both print a message to the terminal
 ### as well as put it down in a log.
 ###
@@ -176,15 +202,8 @@ async def _banish(ctx, *kwargs):
         return
 
     # Now, let's go through the list.
-    victim_mentions = str() # for when we're listing the victims later on.
+    victim_mentions = get_mentions(victims) # for when we're listing the victims later on.
     for victim in victims:
-        if len(victims) > 1:
-            if victims[-2] == victim:
-                victim_mentions += (victim.mention + ' and ')
-            else:
-                victim_mentions += (victim.mention + ', ')
-        else:
-            victim_mentions += victim.mention
         await victim.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
 
     victim_mentions = victim_mentions.strip(', ')
@@ -209,14 +228,6 @@ async def _banish(ctx, *kwargs):
     else:
         await ctx.channel.send('It\'s with great regreat that I must inform you all, that the exile of ' +
                                victim_mentions + ' has come to an end.')
-
-######## ban ##########
-### BAN FROM SERVER ###
-#######################
-@bot.command(name='ban')
-async def _ban(ctx, *kwargs):
-    pass
-    # Do not forget to add a register over banned user IDs for unban.
 
 ######## dmcl ########
 ### DM COMMAND LOG ###
@@ -271,14 +282,6 @@ async def _dmcl(ctx, *kwargs):
         file_object = discord.File(serverlog, filename=('cmd_' + ctx.guild.name + '.txt'))
         await ctx.author.send('Here\'s the commandlog for ' + ctx.guild.name + ' server id: ' + str(ctx.guild.id) + '.\nEnjoy.', file=file_object)
         return
-
-
-######## unban ##########
-### UNBAN FROM SERVER ###
-#########################
-@bot.command(name='unban')
-async def _ban(ctx, *kwargs):
-    pass
 
 ####### restart #######
 ### RESTART THE Bot ###
@@ -399,19 +402,105 @@ async def _rules(ctx, *kwargs):
     await commandlog(ctx, 'SUCCESS', 'RULES',
                      ('They called on rules: ' + str(kwargsl)))
 
+######## ban ##########
+### BAN FROM SERVER ###
+#######################
+@bot.command(name='ban')
+async def _ban(ctx, *kwargs):
+    # If is_smud(user): get fucked.
+    if await is_mod(ctx) == False:
+        await ctx.channel.send(ctx.author.mention + ' You need to be mod to ban people.')
+        await commandlog(ctx, 'FAIL', 'BAN', 'Lack required priveligies.')
+        return
+
+    # Now back to our regular schedule.
+    victims = ctx.message.mentions
+    victims_list = get_mentions(victims)
+    kwargs = list_kwargs(kwargs)
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' Help message for ban goes here.')
+        await commandlog(ctx, 'HELP', 'BAN')
+
+######## unban ##########
+### UNBAN FROM SERVER ###
+#########################
+@bot.command(name='unban')
+async def _ban(ctx, *kwargs):
+    # If is_smud(user): get fucked.
+    if await is_mod(ctx) == False:
+        await ctx.channel.send(ctx.author.mention + ' You need to be mod to unban people.')
+        await commandlog(ctx, 'FAIL', 'UNBAN', 'Lack required priveligies.')
+        return
+
+    # Now back to our regular schedule.
+    victims = ctx.message.mentions
+    victims_list = get_mentions(victims)
+    kwargs = list_kwargs(kwargs)
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' Help message for unban goes here.')
+        await commandlog(ctx, 'HELP', 'UNBAN')
+
 ######### kick #########
 ### KICK FROM SERVER ###
 ########################
 @bot.command(name='kick')
-async def _kick(ctx, member: discord.Member):
-    pass
+async def _kick(ctx, *kwargs):
+    # If is_smud(user): get fucked.
+    if await is_mod(ctx) == False:
+        await ctx.channel.send(ctx.author.mention + ' You need to be mod to kick people.')
+        await commandlog(ctx, 'FAIL', 'KICK', 'Lack required priveligies.')
+        return
+
+    # Now back to our regular schedule.
+    victims = ctx.message.mentions
+    victims_list = get_mentions(victims)
+    kwargs = list_kwargs(kwargs)
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' Help message for kick goes here.')
+        await commandlog(ctx, 'HELP', 'KICK')
 
 ##### mute ######
 ### MUTE USER ###
 #################
 @bot.command(name='mute')
 async def _mute(ctx, *kwargs):
-    pass
+    # If is_smud(user): get fucked.
+    if await is_mod(ctx) == False:
+        await ctx.channel.send(ctx.author.mention + ' You need to be mod to mute people.')
+        await commandlog(ctx, 'FAIL', 'MUTE', 'Lack required priveligies.')
+        return
+
+    # Now back to our regular schedule.
+    victims = ctx.message.mentions
+    victims_list = get_mentions(victims)
+    kwargs = list_kwargs(kwargs)
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' Help message for mute goes here.')
+        await commandlog(ctx, 'HELP', 'MUTE')
+
+##### unmute ######
+### UNMUTE USER ###
+###################
+@bot.command(name='unmute')
+async def _unmute(ctx, *kwargs):
+    # If is_smud(user): get fucked.
+    if await is_mod(ctx) == False:
+        await ctx.channel.send(ctx.author.mention + ' You need to be mod to unmute people.')
+        await commandlog(ctx, 'FAIL', 'UNMUTE', 'Lack required priveligies.')
+        return
+
+    # Now back to our regular schedule.
+    victims = ctx.message.mentions
+    victims_list = get_mentions(victims)
+    kwargs = list_kwargs(kwargs)
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' Help message for unmute goes here.')
+        await commandlog(ctx, 'HELP', 'UNMUTE')
 
 ########### rps #############
 ### ROCK, PAPER, SCISSORS ###
