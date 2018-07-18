@@ -744,11 +744,23 @@ async def _temp(ctx, *kwargs):
             await ctx.channel.send(full_temp_message)
             await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!'))
 
+######## source ###########
+### GET BOT SOURCE CODE ###
+###########################
 @bot.command(name='source')
 async def _source(ctx, *kwargs):
     await ctx.channel.send('My source code is available at:\n' +
                            'https://github.com/kaminix/DrFreeze')
     await commandlog(ctx, 'SUCCESS', 'SOURCE')
+
+####### dummies ########
+### INVITE BA'ATHMAN ###
+###### AND ROBIN #######
+@bot.command(name='dummies')
+async def _dummies(ctx, *kwargs):
+    await ctx.channel.send('Ba\'athman: <https://discordapp.com/oauth2/authorize?client_id=469030362119667712&scope=bot>\n' +
+                          'Robin: <https://discordapp.com/oauth2/authorize?client_id=469030900492009472&scope=bot>\n')
+    await commandlog(ctx, 'SUCCESS', 'DUMMIES')
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup

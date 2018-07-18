@@ -22,6 +22,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!activity** - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
+* **!dummies**  - Invite links for the dummy bots Ba'athman and Robin.
 
 ### Next up
 * **!kick**     - (Mod) Kicks the user from the server.
