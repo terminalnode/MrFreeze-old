@@ -12,8 +12,8 @@ bot = commands.Bot(command_prefix='!')
 ###
 ### Returns True if the author is a mod, otherwise False
 ###
-async def is_mod(ctx):
-    return(discord.utils.get(ctx.guild.roles, name='Administration') in ctx.author.roles)
+async def is_mod(ctx, the_user):
+    return(discord.utils.get(ctx.guild.roles, name='Administration') in the_user.roles)
 
 ###
 ### Looks through config/files for URL of a picture matching the file name.
@@ -174,7 +174,7 @@ async def _banish(ctx, *kwargs):
         return
 
     # Non-mod users can ask for help on how to use the command, but that's it.
-    if await is_mod(ctx) == False:
+    if await is_mod(ctx, ctx.author) == False:
         await commandlog(ctx, 'FAIL', 'BANISH',
                         ('User did not have sufficient privilegies to banish ' + str(ctx.message.mentions)))
         await ctx.channel.send('Ignorant smud, you\'re not  allowed to banish people, ' +
@@ -234,7 +234,7 @@ async def _dmcl(ctx, *kwargs):
     # TODO DM last X number of lines from the log. TODO
     # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
     # If the user isn't mod they're getting thrown out.
-    if not await is_mod(ctx):
+    if not await is_mod(ctx, ctx.author):
         await ctx.channel.send(ctx.author.mention + ' Dream on, you don\'t have sufficient priveligies to view, delete the logs ' +
                                                     'or even ask for help on how to use this command.')
         await commandlog(ctx, 'FAIL', 'DMCL')
@@ -445,14 +445,13 @@ async def _ban_list(ctx):
 @bot.command(name='ban')
 async def _ban(ctx, *kwargs):
     # If is_smud(user): get fucked.
-    if await is_mod(ctx) == False:
+    if await is_mod(ctx, ctx.author) == False:
         await ctx.channel.send(ctx.author.mention + ' You need to be mod to ban people.')
         await commandlog(ctx, 'FAIL', 'BAN', 'Lack required priveligies.')
         return
 
     # Now back to our regular schedule.
     victims = ctx.message.mentions
-    victims_list = get_mentions(victims)
     kwargs = list_kwargs(kwargs)
 
     if 'help' in kwargs:
@@ -475,14 +474,74 @@ async def _ban(ctx, *kwargs):
 
     # if we don't have any mentions we can't make any bans
     # so our next step is to check that victims_list isn't empty.
-    if len(victims_list) == 0:
+    if len(victims) == 0:
         await ctx.channel.send(ctx.author.mention + ' I\'m not a mind reader and you didn\'t mention anyone in your request. ' +
                               'If you need help, ask for help. Am I the only one tired of the incompetency of this mod team?')
         await commandlog(ctx, 'FAIL', 'BAN', 'No mentions.')
+        return
 
     # Finally, let's get banning.
-    for i in victims_list:
-        pass
+    people_banned = list()
+    people_not_banned = list()
+    tried_to_ban_mod = False
+    for i in victims: # each i is a member object
+        if await is_mod(ctx, i) == False:
+            try:
+                await ctx.guild.ban(i)
+                people_banned.append(i)
+            except:
+                await ctx.channel.send(ctx.author.mention + ' There was an error banning user: ' + i.mention)
+                people_not_banned.append(i)
+        else:
+            await ctx.channel.send(ctx.author.mention + ' There was an error banning user: ' + i.mention +
+                                  '. This might have to do with the fact that they\'re a MOD?! Maybe? Huh?!')
+            people_not_banned.append(i)
+            tried_to_ban_mod = True
+
+    # Now we need a victims_msg and not_victims_msg proper for posting in discord,
+    # and a commandlog_banned and commandlog_not_banned for posting in the log.
+    commandlog_banned = list()
+    commandlog_not_banned = list()
+    victims_msg = str()
+    not_victims_msg = str()
+    if len(people_banned) > 0:
+        victims_msg = get_mentions(people_banned)
+        for i in people_banned:
+            commandlog_banned.append(i.name + '#' + i.discriminator)
+    if len(people_not_banned) > 0:
+        not_victims_msg = get_mentions(people_not_banned)
+        for i in people_not_banned:
+            commandlog_not_banned.append(i.name + '#' + i.discriminator)
+
+    if len(people_not_banned) > 0 and len(people_banned) > 0:
+        if len(victims) == 1:
+            await ctx.channel.send(ctx.author.mention + ' The following person has been banned: ' + victims_msg)
+        else:
+            await ctx.channel.send(ctx.author.mention + ' The following people have been banned: ' + victims_msg)
+        await commandlog(ctx, 'SUCCESS', 'BAN', 'The following people were banned: ' + str(commandlog_banned))
+    else:
+        if len(people_banned) == 0:
+            if not tried_to_ban_mod:
+                await ctx.channel.send(ctx.author.mention + ' I couldn\'t ban any of the people you wanted and I\'m not sure why.')
+                await commandlog(ctx, 'FAIL', 'BAN')
+            else:
+                await commandlog(ctx, 'FAIL', 'BAN', 'Tried to ban a mod.')
+            return
+
+        else:
+            await ctx.channel.send(ctx.author.mention + ' I wasn\'t able to ban all the people you wanted, the following were banned: ' + victims_msg +
+                                                        ' but these people were not: ' + not_victims_msg)
+
+            were_banned     = ('Partial success, following people were banned: ' + str(commandlog_banned))
+            were_not_banned = ('The following people were not banned: ' + str(commandlog_banned))
+            if not tried_to_ban_mod:
+                await commandlog(ctx, 'FAIL', 'BAN', commandlog_banned, commandlog_not_banned)
+            else:
+                await commandlog(ctx, 'FAIL', 'BAN', commandlog_banned, commandlog_not_banned, 'At least one of the people they attempted to ban was a mod.')
+
+
+
+
 
 
 
@@ -493,14 +552,12 @@ async def _ban(ctx, *kwargs):
 @bot.command(name='unban')
 async def _ban(ctx, *kwargs):
     # If is_smud(user): get fucked.
-    if await is_mod(ctx) == False:
+    if await is_mod(ctx, ctx.author) == False:
         await ctx.channel.send(ctx.author.mention + ' You need to be mod to unban people.')
         await commandlog(ctx, 'FAIL', 'UNBAN', 'Lack required priveligies.')
         return
 
     # Now back to our regular schedule.
-    victims = ctx.message.mentions
-    victims_list = get_mentions(victims)
     kwargs = list_kwargs(kwargs)
 
     # bans.msg = message to print
@@ -566,6 +623,10 @@ async def _ban(ctx, *kwargs):
         await commandlog(ctx, 'FAIL', 'UNBAN', 'No user found in arguments: ' + str(kwargs))
 
     else: # let's get unbanning
+    # TODO TODO TODO TODO TODO TODO TODO
+    # TODO Reduce number of API calls.
+    # TODO Can't ban/unban more than one person at a time, but could put it all in one message.
+    # TODO TODO TODO TODO TODO TODO TODO
         for i in unban_list:
             try:
                 await ctx.guild.unban(i)
@@ -584,7 +645,7 @@ async def _ban(ctx, *kwargs):
 @bot.command(name='kick')
 async def _kick(ctx, *kwargs):
     # If is_smud(user): get fucked.
-    if await is_mod(ctx) == False:
+    if await is_mod(ctx, ctx.author) == False:
         await ctx.channel.send(ctx.author.mention + ' You need to be mod to kick people.')
         await commandlog(ctx, 'FAIL', 'KICK', 'Lack required priveligies.')
         return
@@ -601,7 +662,14 @@ async def _kick(ctx, *kwargs):
 
 
 
-
+####### inactive #########
+### CALCULATE INACTIVE ###
+######### USERS ##########
+##########################
+# use the estimate_pruned_members function
+@bot.command(name='inactive')
+async def _inactive(ctx, *kwargs):
+    pass
 
 
 ##### mute ######
@@ -610,7 +678,7 @@ async def _kick(ctx, *kwargs):
 @bot.command(name='mute')
 async def _mute(ctx, *kwargs):
     # If is_smud(user): get fucked.
-    if await is_mod(ctx) == False:
+    if await is_mod(ctx, ctx.author) == False:
         await ctx.channel.send(ctx.author.mention + ' You need to be mod to mute people.')
         await commandlog(ctx, 'FAIL', 'MUTE', 'Lack required priveligies.')
         return
@@ -636,7 +704,7 @@ async def _mute(ctx, *kwargs):
 @bot.command(name='unmute')
 async def _unmute(ctx, *kwargs):
     # If is_smud(user): get fucked.
-    if await is_mod(ctx) == False:
+    if await is_mod(ctx, ctx.author) == False:
         await ctx.channel.send(ctx.author.mention + ' You need to be mod to unmute people.')
         await commandlog(ctx, 'FAIL', 'UNMUTE', 'Lack required priveligies.')
         return
@@ -898,7 +966,7 @@ async def _botnick(ctx, *kwargs):
             newnick += ' '
         newnick += kwargs[i]
     if len(newnick) <= 32:
-        if await is_mod(ctx):
+        if await is_mod(ctx, ctx.author):
             await ctx.ClientUser.edit(nick = newnick)
             await ctx.channel.send(ctx.author.mention + ' Yes my lord, I will henceforth be known by the name of \'' + newnick + '\'.')
             await commandlog(ctx, 'SUCCESS', 'BOTNICK', ('Bot nick was changed to: ' + newnick))

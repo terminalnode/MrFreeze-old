@@ -16,6 +16,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!unban**    - (Mod) Removes ban from the server.
 * **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
 * **!dmcl**     - (Mod) DM commandlog file for the current server to author.
+* **!ban**      - (Mod) Bans the user from the server.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
 * **!source**   - Posts a link to this github page.
@@ -27,7 +28,6 @@ Below is a list of implemented and planned commands, as well as what I'm current
 
 ### Next up
 * **!kick**     - (Mod) Kicks the user from the server.
-* **!ban**      - (Mod) Bans the user from the server.
 
 ### Planned but not yet implemented
 * **!mute**     - (Mod) Mutes the user.
