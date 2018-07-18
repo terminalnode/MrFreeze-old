@@ -13,6 +13,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 
 ### Fully implemented (as far as I know)
 * **!restart**  - (Owner) Restarts the bot completely. Very useful for testing new code.
+* **!unban**    - (Mod) Removes ban from the server.
 * **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
 * **!dmcl**     - (Mod) DM commandlog file for the current server to author.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
@@ -26,10 +27,9 @@ Below is a list of implemented and planned commands, as well as what I'm current
 
 ### Next up
 * **!kick**     - (Mod) Kicks the user from the server.
+* **!ban**      - (Mod) Bans the user from the server.
 
 ### Planned but not yet implemented
-* **!ban**      - (Mod) Bans the user from the server.
-* **!unban**    - (Mod) Removes ban from the server.
 * **!mute**     - (Mod) Mutes the user.
 * **!botnick**  - (Mod) Changes the nick of the bot.
 * **!quote**    - (Mod) Add, delete, and read random quotes.

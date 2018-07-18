@@ -1,7 +1,7 @@
 # Discord bot by TerminalNode
 import discord
 from discord.ext import commands
-import logging, os, asyncio, sys
+import logging, os, asyncio, sys, collections
 import time, fractions, signal, random
 
 ### Cheat, how to make list comprehensions:
@@ -64,26 +64,20 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
 
     backspace = ' ' * 4
     frontspace = ' ' * 4
-
-
     if log_category == 'SUCCESS':
         logentry = t + frontspace + 'SUCCESS' + backspace
-
     elif log_category == 'FAIL':
         logentry = t + frontspace + 'FAIL   ' + backspace
-
     elif log_category == 'HELP':
         logentry = t + frontspace + 'HELP   ' + backspace
-
     elif log_category == 'TROLL':
         logentry = t + frontspace + 'TROLL  ' + backspace
-
     elif log_category == 'DELETE':
         logentry = t + frontspace + 'DELETE ' + backspace
-
     elif log_category == 'SEND':
         logentry = t + frontspace + 'SEND   ' + backspace
-
+    elif log_category == 'LIST':
+        logentry = t + frontspace + 'LIST   ' + backspace
     else:
         logentry = t + frontspace + '?????  ' + backspace
 
@@ -402,6 +396,49 @@ async def _rules(ctx, *kwargs):
     await commandlog(ctx, 'SUCCESS', 'RULES',
                      ('They called on rules: ' + str(kwargsl)))
 
+###########################################################################################################
+################################ This block is mostly used for ############################################
+############################# administrative functions. They are ##########################################
+##############################  grouped like this so they'll be ###########################################
+############################ easy to find and have all auxilliary #########################################
+################################## functions close at hand ################################################
+###########################################################################################################
+
+######## ban list #########
+### AUXILLIARY FUNCTION ###
+###################################################################
+## This is an auxilliary function. It is used by !ban and !unban ##
+##  But can itself not be called from discord. It gives a named  ##
+##   tuple containing a message with a list of banned users as   ##
+##       well as a list of those users as discord objects        ##
+###################################################################
+
+async def _ban_list(ctx):
+    ban_list = await ctx.guild.bans()
+
+    msg = ctx.author.mention + ' Here\'s a list of banned users on this server:\n'
+
+    for i in ban_list:
+        msg += '**' + i.user.name + '#' + i.user.discriminator + '**   (ID: ' + str(i.user.id) + ')\n'
+        if str(i.reason) != 'None':
+            msg += '**Reason:** ' + str(i.reason) + '\n\n'
+        if str(i.reason) == 'None':
+            msg += '\n'
+
+    msg = msg.strip()
+
+    user_list = list()
+    for i in ban_list:
+        user_list.append(i.user)
+
+    # This will return a tuple where:
+    # .msg shows the message of the list of bans
+    # .list returns the users in ctx.guild.bans
+    bans = collections.namedtuple('bans', ['msg', 'list'])
+    returnvalue = bans(msg, user_list)
+    return returnvalue
+
+
 ######## ban ##########
 ### BAN FROM SERVER ###
 #######################
@@ -421,6 +458,34 @@ async def _ban(ctx, *kwargs):
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' Help message for ban goes here.')
         await commandlog(ctx, 'HELP', 'BAN')
+        return
+
+    elif 'list' in kwargs:
+        # bans.msg = message to print
+        # bans.list = list of banned members
+        bans = await _ban_list(ctx)
+
+        # If there are no bans, we now know.
+        await commandlog(ctx, 'LIST', 'BAN')
+        if len(bans.list) == 0:
+            await ctx.channel.send(ctx.author.mention + ' No users are banned from this server.')
+            return
+        await ctx.channel.send(bans.msg)
+        return
+
+    # if we don't have any mentions we can't make any bans
+    # so our next step is to check that victims_list isn't empty.
+    if len(victims_list) == 0:
+        await ctx.channel.send(ctx.author.mention + ' I\'m not a mind reader and you didn\'t mention anyone in your request. ' +
+                              'If you need help, ask for help. Am I the only one tired of the incompetency of this mod team?')
+        await commandlog(ctx, 'FAIL', 'BAN', 'No mentions.')
+
+    # Finally, let's get banning.
+    for i in victims_list:
+        pass
+
+
+
 
 ######## unban ##########
 ### UNBAN FROM SERVER ###
@@ -438,9 +503,80 @@ async def _ban(ctx, *kwargs):
     victims_list = get_mentions(victims)
     kwargs = list_kwargs(kwargs)
 
+    # bans.msg = message to print
+    # bans.list = list of banned members
+    bans = await _ban_list(ctx)
+
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' Help message for unban goes here.')
         await commandlog(ctx, 'HELP', 'UNBAN')
+        return
+
+    elif 'list' in kwargs:
+        await commandlog(ctx, 'LIST', 'UNBAN')
+        # If there are no bans, we now know.
+        if len(bans.list) == 0:
+            await ctx.channel.send(ctx.author.mention + ' No users are banned from this server.')
+            return
+        await ctx.channel.send(bans.msg + '\n\n*For unban instructions, type !unban help.*')
+        return
+
+    # If no one's actually banned we might as well stop trying.
+    elif len(bans.list) == 0:
+        await ctx.channel.send('No users are banned from this server, so there\'s no point in even trying.')
+        await commandlog(ctx, 'FAIL', 'UNBAN', 'No one is banned atm.')
+        return
+
+    # Finally, we're ready to unban.
+    # The kwargs we're accepting are IDs or names + discriminators
+
+    # The id's are ints so we'll have to change all the numbers
+    # we can find in kwargs to that.
+    for i in kwargs:
+        try:
+            if i.isdigit(): kwargs.append(int(i))
+                # We don't actually need to remove the old entry, so we won't.
+        except:
+            pass
+
+        try:
+            if i[-5] == '#' and i[-4:].isdigit(): # found a sequence of #0000, woop woop.
+                # We know this is safe because i[-4:] is confirmed to be a digit and
+                # i[:-5] is just the rest of the string before the hash tag.
+
+                # i.e., this adds a list entry of [ username , discriminator ]
+                kwargs.append([ i[:-5] , i[-4:] ])
+        except:
+            pass
+
+    # Now we'll run through the bans.list
+    # and look for matching (names+discriminators)/IDs.
+    unban_list = list()
+    for i in bans.list:
+        if i.id in kwargs:
+            if i not in unban_list:
+                unban_list.append(i)
+        if [ i.name.lower() , i.discriminator ] in kwargs:
+            if i not in unban_list:
+                unban_list.append(i)
+
+    if len(unban_list) == 0:
+        await ctx.channel.send(ctx.author.mention + ' None of the users or IDs you specified ' +
+                                                    'were found in the list of banned users.')
+        await commandlog(ctx, 'FAIL', 'UNBAN', 'No user found in arguments: ' + str(kwargs))
+
+    else: # let's get unbanning
+        for i in unban_list:
+            try:
+                await ctx.guild.unban(i)
+                await ctx.channel.send(ctx.author.mention + ' Don\'t tell me I didn\'t warn you... ' + i.name + '#' + i.discriminator + ' has been unbanned.')
+                await commandlog(ctx, 'SUCCESS', 'UNBAN', i.name + '#' + i.discriminator + ' was unbanned.')
+            except:
+                await ctx.channel.send(ctx.author.mention + 'For some reason this user couldn\'t be unbanned: ' + i.name + '#' + i.discriminator)
+                await commandlog(ctx, 'FAIL', 'UNBAN', 'Couldn\'t unban ' + i.name + '#' + i.discriminator + ' for some reason.')
+
+
+
 
 ######### kick #########
 ### KICK FROM SERVER ###
@@ -461,6 +597,12 @@ async def _kick(ctx, *kwargs):
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' Help message for kick goes here.')
         await commandlog(ctx, 'HELP', 'KICK')
+        return
+
+
+
+
+
 
 ##### mute ######
 ### MUTE USER ###
@@ -481,6 +623,12 @@ async def _mute(ctx, *kwargs):
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' Help message for mute goes here.')
         await commandlog(ctx, 'HELP', 'MUTE')
+        return
+
+
+
+
+
 
 ##### unmute ######
 ### UNMUTE USER ###
@@ -501,6 +649,15 @@ async def _unmute(ctx, *kwargs):
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' Help message for unmute goes here.')
         await commandlog(ctx, 'HELP', 'UNMUTE')
+        return
+
+
+
+###########################################################################################################
+###########################################################################################################
+###########################################################################################################
+###########################################################################################################
+###########################################################################################################
 
 ########### rps #############
 ### ROCK, PAPER, SCISSORS ###
