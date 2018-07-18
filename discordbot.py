@@ -44,26 +44,30 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
     # First we'll print the time and whether the command was successful or not.
     t = time.asctime(time.gmtime())
 
+    backspace = ' ' * 4
+    frontspace = ' ' * 4
+
+
     if log_category == 'SUCCESS':
-        logentry = t + ' SUCCESS\t'
+        logentry = t + frontspace + 'SUCCESS' + backspace
 
     elif log_category == 'FAIL':
-        logentry = t + ' FAIL\t\t'
+        logentry = t + frontspace + 'FAIL   ' + backspace
 
     elif log_category == 'HELP':
-        logentry = t + ' HELP\t\t'
+        logentry = t + frontspace + 'HELP   ' + backspace
 
     elif log_category == 'TROLL':
-        logentry = t + ' TROLL\t\t'
+        logentry = t + frontspace + 'TROLL  ' + backspace
 
-    elif log_category == '\DELETE':
-        logentry = t + ' \DELETE\t'
+    elif log_category == 'DELETE':
+        logentry = t + frontspace + 'DELETE ' + backspace
 
     elif log_category == 'SEND':
-        logentry = t + ' SEND\t\t'
+        logentry = t + frontspace + 'SEND   ' + backspace
 
     else:
-        logentry = t + ' ????\t\t'
+        logentry = t + frontspace + '?????  ' + backspace
 
     # Second part will be 1) who issued the command, 2) which command was it.
     # Command "banish" issued by {0.author}, ID: '.format(ctx) + str(ctx.author.id)
@@ -74,7 +78,7 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
     if len(kwargs) > 0:
         commentl = list()
         for i in range(len(kwargs)):
-            logentry += '\n\t\t\t\t\t' + kwargs[i]
+            logentry += '\n' + (' ' * 39) + kwargs[i] # new line, 34 spaces and the arguments used.
 
     print (logentry)
     commandlog.write(logentry + '\n')
@@ -126,6 +130,8 @@ async def _mrfreeze(ctx, *kwargs):
     elif 'help' in kwargs or 'what' in kwargs or 'wtf' in kwargs or 'explanation' in kwargs:
         await ctx.channel.send('*!mrfreeze* will post a dank Dr. Freeze quote from Batman & Robin. ' +
                                'All instances of Batman are replaced with your name, and all instances of Gotham are replaced with the channel name.')
+        await commandlog(ctx, 'HELP', 'MRFREEZE', ('Arguments used: ' + str(kwargs)))
+        return
 
     elif 'sucks' in kwargs or 'suck' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' No, *you* suck!')
@@ -500,9 +506,12 @@ async def _region(ctx, *kwargs):
         await commandlog(ctx, 'HELP', 'REGION', 'Asked for region list.')
         return
 
-    if 'antarctica' in kwargs or 'antartica' in kwargs or 'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs:
+    said_antarctica = ('anarctica' in kwargs or 'antarctica' in kwargs or 'antartica' in kwargs or
+                       'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs)
+    spelled_right = 'antarctica' in kwargs
+    if said_antarctica:
         await commandlog(ctx, 'TROLL', 'REGION', 'Claimed to live in Antarctica.')
-        if 'antartica' in kwargs or 'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs:
+        if not spelled_right:
             await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in what they\'re calling "' + kwargmerge + '"! ' +
                                   'They can\'t even spell it right!\nUsually I\'d only give them ten minutes in that frozen hell, but for this... ' +
                                   'TWENTY minutes in penguin school!')
