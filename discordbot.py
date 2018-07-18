@@ -539,13 +539,6 @@ async def _ban(ctx, *kwargs):
             else:
                 await commandlog(ctx, 'FAIL', 'BAN', commandlog_banned, commandlog_not_banned, 'At least one of the people they attempted to ban was a mod.')
 
-
-
-
-
-
-
-
 ######## unban ##########
 ### UNBAN FROM SERVER ###
 #########################

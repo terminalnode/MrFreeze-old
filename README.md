@@ -20,10 +20,10 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
 * **!source**   - Posts a link to this github page.
-* **!mrfreeze** - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
 * **!activity** - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
+* **!mrfreeze** - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
 * **!dummies**  - Invite links for the dummy bots Ba'athman and Robin.
 
 ### Next up
@@ -32,6 +32,6 @@ Below is a list of implemented and planned commands, as well as what I'm current
 ### Planned but not yet implemented
 * **!mute**     - (Mod) Mutes the user.
 * **!botnick**  - (Mod) Changes the nick of the bot.
-* **!quote**    - (Mod) Add, delete, and read random quotes.
+* **!quote**    - (Mod) Add, delete, and (All) read random quotes.
 * **!rps**      - Play rock, paper, scissors with the bot.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
