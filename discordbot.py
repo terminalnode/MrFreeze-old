@@ -10,14 +10,6 @@ import time, fractions, signal, random
 bot = commands.Bot(command_prefix='!')
 
 ###
-### This will be used for functions which are planned
-### for but not yet implemented to give users a heads up.
-###
-async def not_implemented(ctx, command):
-    await ctx.channel.send(ctx.author.mention + " The command '" + command + "' isn't implemented yet. Try again some other time!")
-    return
-
-###
 ### Returns True if the author is a mod, otherwise False
 ###
 async def is_mod(ctx):
@@ -223,7 +215,7 @@ async def _banish(ctx, *kwargs):
 #######################
 @bot.command(name='ban')
 async def _ban(ctx, *kwargs):
-    await not_implemented(ctx, 'ban')
+    pass
     # Do not forget to add a register over banned user IDs for unban.
 
 ######## dmcl ########
@@ -286,7 +278,7 @@ async def _dmcl(ctx, *kwargs):
 #########################
 @bot.command(name='unban')
 async def _ban(ctx, *kwargs):
-    await not_implemented(ctx, 'unban')
+    pass
 
 ####### restart #######
 ### RESTART THE Bot ###
@@ -412,21 +404,21 @@ async def _rules(ctx, *kwargs):
 ########################
 @bot.command(name='kick')
 async def _kick(ctx, member: discord.Member):
-    await not_implemented(ctx, 'kick')
+    pass
 
 ##### mute ######
 ### MUTE USER ###
 #################
 @bot.command(name='mute')
 async def _mute(ctx, *kwargs):
-    await not_implemented(ctx, 'mute')
+    pass
 
 ########### rps #############
 ### ROCK, PAPER, SCISSORS ###
 #############################
 @bot.command(name='rps')
 async def _rps(ctx, *kwargs):
-    await not_implemented(ctx, 'rps')
+    pass
 
 ###### region #######
 ### SELECT REGION ###
@@ -567,7 +559,7 @@ async def _region(ctx, *kwargs):
 #######################
 @bot.command(name='quote')
 async def _quote(ctx, *kwargs):
-    await not_implemented(ctx, 'quote')
+    pass
 
 ###### vote #######
 ### CALL A VOTE ###
