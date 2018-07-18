@@ -56,6 +56,12 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
     elif log_category == 'TROLL':
         logentry = t + ' TROLL\t\t'
 
+    elif log_category == '\DELETE':
+        logentry = t + ' \DELETE\t'
+
+    elif log_category == 'SEND':
+        logentry = t + ' SEND\t\t'
+
     else:
         logentry = t + ' ????\t\t'
 
@@ -221,7 +227,53 @@ async def _ban(ctx, *kwargs):
 # should also have an option to delete the old commandlog
 @bot.command(name='dmcl')
 async def _dmcl(ctx, *kwargs):
-    await not_implemented(ctx, 'dmcl')
+    # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    # TODO DM last X number of lines from the log. TODO
+    # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    # If the user isn't mod they're getting thrown out.
+    if not await is_mod(ctx):
+        await ctx.channel.send(ctx.author.mention + ' Dream on, you don\'t have sufficient priveligies to view, delete the logs ' +
+                                                    'or even ask for help on how to use this command.')
+        await commandlog(ctx, 'FAIL', 'DMCL')
+        return
+
+    # Make all the kwargs lower case.
+    kwargs = list(kwargs)
+    if len(kwargs) != 0:
+        for i in range(len(kwargs)):
+            kwargs[i] = kwargs[i].lower()
+
+    # The serverlog path will be needed for both delete and send commands below.
+    serverlog = 'logs/cmd_' + ctx.guild.name + '_' + str(ctx.guild.id)
+
+    # If help was requested, we'll give them help.
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' The commandlog contains detailed information about when different commands were issued, ' +
+                               'the arguments with which they were issued, whether they were successfull or not and by who they were issued. ' +
+                               '!dmcl (short for DM commandlog) will DM these logs to you if issued without any of the keywords listed below.\n\n' +
+                               'Include **help** in your request to show this message.\n\n' +
+                               'Include **delete** or \'clear\' in your request to delete/clear the commandlog.\n\n' +
+                               'This request too is now noted in the commandlog. :smirk:')
+        await commandlog(ctx, 'HELP', 'DMCL')
+        return
+
+    # If delete was requested, the command logs will be deleted.
+    elif 'delete' in kwargs or 'clear' in kwargs:
+        await ctx.channel.send(ctx.author.mention + 'The commandlogs for ' + ctx.guild.name + ' will now be deleted and with it all evidence ' +
+                                                    'of your ill deeds will be purged from the face of this world. :wine_glass:')
+        if os.path.exists(serverlog):
+            os.remove(serverlog)
+        await commandlog(ctx, 'DELETE', 'DMCL')
+        return
+
+    # If none of the above were requested, or a bare !dmcl without commands
+    # the commandlog will be DMed to them.
+    else:
+        await commandlog(ctx, 'SEND', 'DMCL')
+        file_object = discord.File(serverlog, filename=('cmd_' + ctx.guild.name + '.txt'))
+        await ctx.author.send('Here\'s the commandlog for ' + ctx.guild.name + ' server id: ' + str(ctx.guild.id) + '.\nEnjoy.', file=file_object)
+        return
+
 
 ######## unban ##########
 ### UNBAN FROM SERVER ###

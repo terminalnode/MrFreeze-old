@@ -14,6 +14,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 ### Fully implemented (as far as I know)
 * **!restart**  - (Owner) Restarts the bot completely. Very useful for testing new code.
 * **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
+* **!dmcl**     - (Mod) DM commandlog file for the current server to author.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
 * **!source**   - Posts a link to this github page.
@@ -23,7 +24,6 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
 
 ### Next up
-* **!dmcl**     - (Mod) DM commandlog file for the current server to author.
 * **!kick**     - (Mod) Kicks the user from the server.
 
 ### Planned but not yet implemented
