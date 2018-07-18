@@ -113,17 +113,24 @@ async def on_ready():
 ###############################
 @bot.command(name='mrfreeze')
 async def _mrfreeze(ctx, *kwargs):
+
     if len(kwargs) == 0:
         await ctx.channel.send(mrfreezequote().replace('Batman', ctx.author.mention).replace('Gotham', ctx.channel.mention))
+
     elif 'help' in kwargs or 'what' in kwargs or 'wtf' in kwargs or 'explanation' in kwargs:
-        await ctx.channel.send('*!mrfreeze* will post a dank Dr. Freeze quote from Batman & Robin. All instances of Batman are replaced with your name, and all instances of Gotham are replaced with the channel name.')
+        await ctx.channel.send('*!mrfreeze* will post a dank Dr. Freeze quote from Batman & Robin. ' +
+                               'All instances of Batman are replaced with your name, and all instances of Gotham are replaced with the channel name.')
+
     elif 'sucks' in kwargs or 'suck' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' No, *you* suck!')
+
     else:
         await ctx.channel.send('No, bad ' + ctx.author.mention + '!\nType only *!mrfreeze* for dank Mr. Freeze quotes, or *!mrfreeze* what for an explanation.')
 
+    # Logging of command used. If any arguments were used these will be logged too.
     if len(kwargs) == 0:
         await commandlog(ctx, 'SUCCESS', 'MRFREEZE')
+
     else:
         await commandlog(ctx, 'SUCCESS', 'MRFREEZE', ('Arguments used: ' + str(kwargs)))
 
@@ -146,7 +153,8 @@ async def _banish(ctx, *kwargs):
     if await is_mod(ctx) == False:
         await commandlog(ctx, 'FAIL', 'BANISH',
                         ('User did not have sufficient privilegies to banish ' + str(ctx.message.mentions)))
-        await ctx.channel.send('Ignorant smud, you\'re not  allowed to banish people, you will now yourself be banished for your transgressions.\n'.format(ctx) +
+        await ctx.channel.send('Ignorant smud, you\'re not  allowed to banish people, ' +
+                               'you will now yourself be banished for your transgressions.\n'.format(ctx) +
                                ctx.author.mention + ' will be banished to the frozen hells of Antarctica for 7 minutes!')
         await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
         await asyncio.sleep(7*60) # 7*60 seconds = 7 minutes
@@ -179,9 +187,11 @@ async def _banish(ctx, *kwargs):
     # Singular and plural...
     end_string = 'They will be stuck in that frozen hell for a good 5 minutes!'
     if len(victims) == 1:
-        await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smud ' + victim_mentions + ' has been banished! ' + end_string)
+        await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smud ' +
+                               victim_mentions + ' has been banished! ' + end_string)
     else:
-        await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smuds ' + victim_mentions + ' have been banished! ' + end_string)
+        await ctx.channel.send('Good work ' + ctx.author.mention + '! The filthy smuds ' +
+                               victim_mentions + ' have been banished! ' + end_string)
     await commandlog(ctx, 'SUCCESS', 'BANISH', ('Victims: ' + str( [ x.name + '#' + x.discriminator for x in victims ] )))
 
     # Let's not forget to unbanish them...
@@ -190,9 +200,11 @@ async def _banish(ctx, *kwargs):
         await victim.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
 
     if len(victims) == 1:
-        await ctx.channel.send('It\'s with great regreat that I must inform you all, that the filthy smud ' + victim_mentions + ' now is back from Antarctica.')
+        await ctx.channel.send('It\'s with great regreat that I must inform you all, that ' +
+                               victim_mentions + '\'s exile has come to an end.')
     else:
-        await ctx.channel.send('It\'s with great regreat that I must inform you all, that the filthy smuds ' + victim_mentions + ' now are back from Antarctica.')
+        await ctx.channel.send('It\'s with great regreat that I must inform you all, that the exile of ' +
+                               victim_mentions + ' has come to an end.')
 
 ######## ban ##########
 ### BAN FROM SERVER ###
