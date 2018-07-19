@@ -24,7 +24,7 @@ def get_image(desired):
 
         if currentimage[0] == desired:
             return currentimage[1]
-    return 'https://imgur.com/pgNlDLT' # This is the NoImage file
+    return 'https://i.imgur.com/pgNlDLT.png' # This is the NoImage file
 
 ###
 ### Function to extract mentions from a list of users (e.g. from ctx.message.mentions)
@@ -78,6 +78,8 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
         logentry = t + frontspace + 'SEND   ' + backspace
     elif log_category == 'LIST':
         logentry = t + frontspace + 'LIST   ' + backspace
+    elif log_category == 'SCORE':
+        logentry = t + frontspace + 'SCORE  ' + backspace
     else:
         logentry = t + frontspace + '?????  ' + backspace
 
@@ -720,12 +722,355 @@ async def _unmute(ctx, *kwargs):
 ###########################################################################################################
 ###########################################################################################################
 
+###### score board ########
+### AUXILLIARY FUNCTION ###
+###################################################################
+##  This is an auxilliary function. It is used by !rps  but can  ##
+##    itself not be called from discord. It will either add to   ##
+##       the users current scores or read them back to them.     ##
+###################################################################
+#@bot.command(name='rpsdebug')
+async def _rps_scores(ctx, request, *kwargs):
+    # File has format:
+    # [UserID - Wins - Losses - Draws] Values are separated by space.
+    # We will now format it into a list of:
+    # [member.object, int(wins), int(losses), int(draws), float(percentage), int(total)]
+    score_file = open('config/rps_stats', 'r').readlines()
+
+    # let's make sure there's at least 1 line in score_file
+    if len(score_file) == 0:
+        score_file.append([ctx.author.id, 0, 0, 0])
+
+    entries_to_delete = list()
+    scoretuple = collections.namedtuple('Score', ['user','wins', 'losses', 'draws', 'percentage', 'total'])
+    for i in range(len(score_file)):
+        # This, until next comment, is just crunching the data into a list of integers (including the UserID)
+        score_file[i] = score_file[i].strip()
+        score_file[i] = score_file[i].split(' ')
+        for k in range(len(score_file[i])):
+            new_value = int(score_file[i][k])
+            score_file[i][k] = new_value
+
+        # Now let's add a winning percentage.
+        total_no_games = score_file[i][1] + score_file[i][2] + score_file[i][3]
+        win_percentage = float(score_file[i][1] / total_no_games)
+        score_file[i].append(win_percentage)
+
+        # Now we're changing the snowflake into an abc.snowflake.
+        # discord.utils.get() will return None if no matches are found.
+        invalid_entries_in_list = False
+        score_file[i][0] = discord.utils.get(ctx.guild.members, id=score_file[i][0])
+        if score_file[i][0] == None:
+            invalid_entries_in_list = True
+        #  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+        # TODO check for people not on the scoreboard in the list TODO
+        # TODO !score @mentions doesn't work for people not on the board. TODO
+        #  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+
+        # Last step, we'll turn it into a namedtuple for ease of access
+        score_file[i] = scoretuple(user = score_file[i][0], wins = score_file[i][1],
+                                   losses = score_file[i][2], draws = score_file[i][3],
+                                   percentage = score_file[i][4],
+                                   total = (score_file[i][1] + score_file[i][2] + score_file[i][3]))
+
+    # We can't delete entries in a list while we're looping it because
+    # that will disturb the indexes. So we'll loop it until we can find
+    # no more Nones
+    while invalid_entries_in_list:
+        invalid_entries_in_list = False
+        for i in range(len(score_file)):
+            try:
+                if score_file[i][0] == None:
+                    invalid_entries_in_list = True
+                    del score_file[i]
+            except IndexError:
+                pass
+
+    def find_highest(chosen_type):
+        # This function will be used in a number of functions to find
+        # the top 10 ranking in different categories.
+        nonlocal score_file # this is a list
+        # we need functions for the following:
+        # 'wins', 'losses', 'draws', 'percentage', 'total'
+        def takeWins(elem):
+            return elem.wins
+        def takeLosses(elem):
+            return elem.losses
+        def takeDraws(elem):
+            return elem.draws
+        def takePercentage(elem):
+            return elem.percentage
+        def takeTotal(elem):
+            return elem.total
+
+        relevant_results = list()
+        if chosen_type == 'wins':
+            score_file = sorted(score_file, key=takeWins, reverse=True)
+            for i in score_file:
+                relevant_results.append([i.user.mention, i.wins])
+        elif chosen_type == 'losses':
+            score_file = sorted(score_file, key=takeLosses, reverse=True)
+            for i in score_file:
+                relevant_results.append([i.user.mention, i.losses])
+        elif chosen_type == 'draws':
+            score_file = sorted(score_file, key=takeDraws, reverse=True)
+            for i in score_file:
+                relevant_results.append([i.user.mention, i.draws])
+        elif chosen_type == 'percentage':
+            score_file = sorted(score_file, key=takePercentage, reverse=True)
+            for i in score_file:
+                relevant_results.append([i.user.mention, '{:.1%}'.format(i.percentage)])
+        elif chosen_type == 'total':
+            score_file = sorted(score_file, key=takeTotal, reverse=True)
+            for i in score_file:
+                relevant_results.append([i.user.mention, i.total])
+
+        # Now let's format the results.
+        if chosen_type == 'total':
+            scoreboard_msg = 'Here are the top 10 players in terms of number of games played!\n'
+        else:
+            scoreboard_msg = 'Here are the top 10 players in terms of ' + chosen_type + '!\n'
+        for i in range(10):
+            # **1.** @TerminalNode
+            scoreboard_msg += '**' + str(i+1) + '.** ' + relevant_results[i][0]
+            # **1.** @TerminalNode | Percentage: 12%\n
+            scoreboard_msg += ' | ' + chosen_type.capitalize() + ': ' + str(relevant_results[i][1]) + '\n'
+            # if we're at end of list, break
+            if len(relevant_results) == i+1:
+                break
+        scoreboard_msg = scoreboard_msg.strip()
+
+        return scoreboard_msg
+
+    scoreboard_categories = ('wins', 'losses', 'percentage', 'total', 'draws')
+    if request in scoreboard_categories:
+        return find_highest(request)
+
+
+    # This will be used in the users request as well as the add request
+    def getUserStats(userslist):
+        # Let's retrieve the score of the user in question.
+        scores_to_print = str()
+        for i in userslist:
+            for k in score_file:
+                if i.id == k.user.id:
+                    user_name = '**' + i.name + '#' + i.discriminator + '**'
+                    user_wins = str(k.wins)
+                    user_losses = str(k.losses)
+                    user_draws = str(k.draws)
+                    user_percentage = "{:.1%}".format(k.percentage)
+
+                    scores_to_print += (user_name + '\n' +
+                                       'Wins: ' + user_wins +
+                                       ' / Losses: ' + user_losses +
+                                       ' / Draws: ' + user_draws +
+                                       ' / Total win percentage: ' + user_percentage + '\n')
+        return scores_to_print
+
+
+    if request == 'user':
+        return getUserStats(ctx.message.mentions)
+
+    if request == 'add':
+        for i in range(len(score_file)):
+            if ctx.author.id == i.user.id:
+                if 'won' in kwargs:
+                    i.wins += 1
+                elif 'lost' in kwargs:
+                    i.losses += 1
+                elif 'draw' in kwargs:
+                    i.draws += 1
+        return(getUserStats([ctx.author.id]))
+
+
 ########### rps #############
 ### ROCK, PAPER, SCISSORS ###
 #############################
 @bot.command(name='rps')
 async def _rps(ctx, *kwargs):
-    pass
+    if not kwargs:
+        kwargs = ('help',)
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + open('config/rps_help', 'r').read())
+        await commandlog(ctx, 'HELP', 'RPS')
+        return
+
+    kwargs = list_kwargs(kwargs)
+
+    if ('stats' in kwargs or 'statistics' in kwargs or 'score' in kwargs or 'scoreboard' in kwargs):
+        if len(ctx.message.mentions) == 0:
+            if 'wins' in kwargs or 'win' in kwargs:
+                scoreboard = 'wins'
+            elif 'losses' in kwargs or 'loss' in kwargs or 'loses' in kwargs or 'lose' in kwargs:
+                scoreboard = 'losses'
+            elif 'draws' in kwargs or 'draw' in kwargs:
+                scoreboard = 'draws'
+            elif 'total' in kwargs or 'totals' in kwargs:
+                scoreboard = 'total'
+            else: # percentage is default
+                scoreboard = 'percentage'
+
+            await ctx.channel.send()
+            await commandlog(ctx, 'SCORE', 'RPS', ('User asked for ' + scoreboard + '.'))
+            return
+
+        else:
+            scores_msg = await _rps_scores(ctx, 'user')
+            if len(scores_msg) == 0:
+                scores_msg = "There are no scores registered to any of the requested players."
+            await ctx.channel.send(scores_msg)
+            commandlog_list = list()
+            for i in ctx.message.mentions:
+                commandlog_list.append(i.name + '#' + i.discriminator)
+            await commandlog(ctx, 'SCORE', 'RPS', str(commandlog_list))
+            return
+
+    if 'fountain' in kwargs and 'pen' in kwargs or 'fountain' in kwargs and 'pens' in kwargs:
+        kwargs = ('fountainpen',)
+
+    rock_alts = ( 'stone', 'rock', 'r', 'rok', 'stnoe', 'stoen', 'sten' )
+
+    scissor_alts = ('scissor', 'scissors', 's', 'scisor', 'scisors', 'sc',
+                    'sissor', 'sissors', 'sax' 'scisor', 'scisors', 'sisor',
+                    'sisors' )
+
+    paper_alts = ( 'paper', 'papers', 'ink', 'paperbag', 'påse', 'bag', 'papper',
+                   'papperspåse', 'peiper', 'pejper', 'p', 'b', 'bic', 'ballpoint',
+                   'rollerball' )
+
+    bomb_alts = ( 'nuke', 'bomb', 'atombomb', 'smällkaramell', 'smälkaramell',
+                  'smälkaramel', 'dynamite', 'bang', 'kaboom', 'smällkarammell',
+                  'smälkarammell', 'smälkarammel', 'dynamit' )
+
+    knife_alts = ( 'knife', 'sword', 'katana', 'cutting', 'cut', 'kniv', 'svärd',
+                   'fountainpens', 'fountainpen' )
+
+    claw_alts = ( 'claw', 'hook', 'klo', 'krok' )
+
+    random_alts = ( 'random', 'slump', 'chance', 'chans' )
+
+    swedish_terms = ( 'sten', 'sax', 'påse', 'dynamit', 'kniv', 'svärd', 'klo',
+                      'krok', 'slump', 'chans')
+
+    # Easter egg
+    swedish_mode = False
+    if kwargs[0] in swedish_terms:
+        swedish_mode = True
+
+    # Lazy fuck
+    if kwargs[0] == 'random':
+        kwargs = random.randint(1,3)
+        if not random.randint(0,3): # 1/4 chance of being hc mode.
+            hc_mode = True
+
+    # HC mode uses bomb/knife/claw instead
+    # These correspond to rock/paper/scissor
+    hc_mode = False
+
+    if kwargs[0] in rock_alts:
+        choice = 1
+        choice_txt = 'rock'
+    elif kwargs[0] in scissor_alts:
+        choice = 2
+        choice_txt = 'scissors'
+    elif kwargs[0] in paper_alts:
+        choice = 3
+        choice_txt = 'paper'
+    elif kwargs[0] in bomb_alts:
+        choice = 2 # scissors
+        choice_txt = 'bomb'
+        hc_mode = True
+    elif kwargs[0] in knife_alts:
+        choice = 3 # paper
+        choice_txt = 'knife'
+        hc_mode = True
+    elif kwargs[0] in claw_alts:
+        choice = 1 # rock
+        choice_txt = 'claw'
+        hc_mode = True
+    else:
+        choice = 0 # this means no choice
+
+    if choice == 0:
+        await ctx.channel.send(ctx.author.mention + ' That choice doesn\'t make any sense you smud!')
+        await commandlog(ctx, 'FAIL', 'RPS', 'Choice not in lists: ' + str(kwargs))
+
+    cpu_choice = random.randint(0,3)
+    if choice == cpu_choice:
+        result = 'draw'
+    else:
+        if choice == 1: # rock
+            if cpu_choice == 2: # scissors
+                result = 'won' # rock beats scissors
+            elif cpu_choice == 3: # paper
+                result = 'lost' # paper beats rock
+
+        elif choice == 2: # scissors
+            if cpu_choice == 1: # rock
+                result = 'lost' # rock beats scissors
+            if cpu_choice == 3: # paper
+                result = 'won' # scissors beats paper
+
+        elif choice == 3: # paper
+            if cpu_choice == 1: # rock
+                result = 'won' # paper beats rock
+            elif cpu_choice == 2: # scissors
+                result = 'lost' # scissors beats paper
+
+    if not hc_mode:
+        if cpu_choice == 1:
+            cpu_choice_txt = 'rock'
+            if swedish_mode:
+                cpu_choice_txt = 'sten'
+        if cpu_choice == 2:
+            cpu_choice_txt = 'scissors'
+            if swedish_mode:
+                cpu_choice_txt = 'sax'
+        if cpu_choice == 3:
+            cpu_choice_txt = 'paper'
+            if swedish_mode:
+                cpu_choice_txt = 'påse'
+    else:
+        if cpu_choice == 1:
+            cpu_choice_txt = 'claw'
+            if swedish_mode:
+                cpu_choice_txt = 'klo'
+        if cpu_choice == 2:
+            cpu_choice_txt = 'bomb'
+            # same in swedish
+        if cpu_choice == 3:
+            cpu_choice_txt = 'knife'
+            if swedish_mode:
+                cpu_choice_txt = 'kniv'
+
+    # Determining result message
+    if result == 'draw':
+        if not swedish_mode:
+            result_message = 'The battle ended in a draw with both people choosing ' + choice_txt
+        else:
+            result_message = 'Striden avslutades oavgjort eftersom båda spelarna valde ' + choice_txt
+
+    elif result == 'won':
+        if not swedish_mode:
+            result_message = 'You chose ' + choice_txt + ' which beats my ' + cpu_choice_txt + ' by a small margin!'
+        else:
+            result_message = 'Du valde ' + choice_txt + ' vilket är precis tillräckligt för att slå min ' + cpu_choice_txt + '!'
+
+    elif result == 'lost':
+        if not swedish_mode:
+            result_message = 'I chose ' + cpu_choice_txt + ' which beats your smuddy little ' + choice_txt + ' by a GINORMOUS margin!'
+        else:
+            result_message = 'Jag valde ' + cpu_choice_txt + ' vilket slår din fåniga lilla ' + choice_txt + 'med RÅGE!'
+
+    # Registering new scores
+    if not swedish_mode:
+        result_message += '\n\nThis is your new total score: \n' + str(await _rps_scores(ctx, result))
+    else:
+        result_message += '\n\nDet här är din nya poängställning: \n' + str(await _rps_scores(ctx, result))
+
+    # Sending result message + new scores
+    await ctx.channel.send(result_message)
 
 ###### region #######
 ### SELECT REGION ###
@@ -806,13 +1151,13 @@ async def _region(ctx, *kwargs):
         return
 
     said_antarctica = ('anarctica' in kwargs or 'antarctica' in kwargs or 'antartica' in kwargs or
-                       'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs)
+                       'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs or 'antacrtica' in kwargs)
     spelled_right = 'antarctica' in kwargs
     if said_antarctica:
         await commandlog(ctx, 'TROLL', 'REGION', 'Claimed to live in Antarctica.')
         if not spelled_right:
             await ctx.channel.send(ctx.author.mention + ' is a filthy *LIAR* claiming to live in what they\'re calling "' + kwargmerge + '"! ' +
-                                  'They can\'t even spell it right!\nUsually I\'d only give them ten minutes in that frozen hell, but for this... ' +
+                                  'They can\'t even spell it right!\n\nUsually I\'d only give them ten minutes in that frozen hell, but for this... ' +
                                   'TWENTY minutes in penguin school!')
             await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
             await asyncio.sleep(1200) # 10*60 seconds = 10 minutes
