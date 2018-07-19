@@ -97,6 +97,11 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
     commandlog.close()
 
 def mrfreezequote():
+    with open('config/mrfreezequotes', 'r') as f:
+        return random.choice(f.read().split())
+    
+    
+    
     mf_quotelist = []
     for i in open('config/mrfreezequotes', 'r'):
         mf_quotelist.append(i.strip())
