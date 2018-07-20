@@ -735,8 +735,12 @@ async def _rps_scores(ctx, request, *kwargs):
     # [member.object, int(wins), int(losses), int(draws), float(percentage), int(total)]
     score_file = open('config/rps_stats', 'r').readlines()
 
-    # let's make sure there's at least 1 line in score_file
-    if len(score_file) == 0:
+    # First, if the author isn't in the score file let's make sure they are.
+    in_score_file = False
+    for i in score_file:
+        if str(ctx.author.id) in i:
+            in_score_file = True
+    if in_score_file == False:
         score_file.append(str(ctx.author.id) + ' 0 0 0')
 
     entries_to_delete = list()
@@ -763,10 +767,6 @@ async def _rps_scores(ctx, request, *kwargs):
         score_file[i][0] = discord.utils.get(ctx.guild.members, id=score_file[i][0])
         if score_file[i][0] == None:
             invalid_entries_in_list = True
-        #  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-        # TODO check for people not on the scoreboard in the list TODO
-        # TODO !score @mentions doesn't work for people not on the board. TODO
-        #  TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
 
         # Last step, we'll turn it into a namedtuple for ease of access
         score_file[i] = scoretuple(user = score_file[i][0], wins = score_file[i][1],
@@ -804,27 +804,30 @@ async def _rps_scores(ctx, request, *kwargs):
         def takeTotal(elem):
             return elem.total
 
+        def getUsername(user):
+            return '**' + user.name + '#' + i.user.discriminator + '**'
+
         relevant_results = list()
         if chosen_type == 'wins':
             score_file = sorted(score_file, key=takeWins, reverse=True)
             for i in score_file:
-                relevant_results.append([i.user.mention, i.wins])
+                relevant_results.append([getUsername(i.user), i.wins])
         elif chosen_type == 'losses':
             score_file = sorted(score_file, key=takeLosses, reverse=True)
             for i in score_file:
-                relevant_results.append([i.user.mention, i.losses])
+                relevant_results.append([getUsername(i.user), i.losses])
         elif chosen_type == 'draws':
             score_file = sorted(score_file, key=takeDraws, reverse=True)
             for i in score_file:
-                relevant_results.append([i.user.mention, i.draws])
+                relevant_results.append([getUsername(i.user), i.draws])
         elif chosen_type == 'percentage':
             score_file = sorted(score_file, key=takePercentage, reverse=True)
             for i in score_file:
-                relevant_results.append([i.user.mention, '{:.1%}'.format(i.percentage)])
+                relevant_results.append([getUsername(i.user), '{:.1%}'.format(i.percentage)])
         elif chosen_type == 'total':
             score_file = sorted(score_file, key=takeTotal, reverse=True)
             for i in score_file:
-                relevant_results.append([i.user.mention, i.total])
+                relevant_results.append([getUsername(i.user), i.total])
 
         # Now let's format the results.
         if chosen_type == 'total':
@@ -861,11 +864,11 @@ async def _rps_scores(ctx, request, *kwargs):
                     user_draws = str(k.draws)
                     user_percentage = "{:.1%}".format(k.percentage)
 
-                    scores_to_print += (user_name + '\n' +
+                    scores_to_print += (user_name + ': ' +
                                        'Wins: ' + user_wins +
-                                       ' / Losses: ' + user_losses +
-                                       ' / Draws: ' + user_draws +
-                                       ' / Total win percentage: ' + user_percentage + '\n')
+                                       ' | Losses: ' + user_losses +
+                                       ' | Draws: ' + user_draws +
+                                       ' | Total win percentage: ' + user_percentage + '\n')
         return scores_to_print
 
 
@@ -894,8 +897,9 @@ async def _rps_scores(ctx, request, *kwargs):
                                            draws = draws, percentage = percentage, total = total)
         # Now we'll update the score file
         new_file = open('config/rps_stats', 'w')
+        print(score_file)
         for i in score_file:
-            new_file.write(str(i.user.id) + ' ' + str(i.wins) + ' ' + str(i.losses) + ' ' + str(i.draws))
+            new_file.write(str(i.user.id) + ' ' + str(i.wins) + ' ' + str(i.losses) + ' ' + str(i.draws) + '\n')
 
         userdiscriminator = ('**' + ctx.author.name + '#' + str(ctx.author.discriminator) + '**\n')
         return(getUserStats([ctx.author]).replace(userdiscriminator, ''))
@@ -969,7 +973,7 @@ async def _rps(ctx, *kwargs):
                      'smälkarammell', 'smälkarammel', 'dynamit'),
 
         'knife':    ('knife', 'sword', 'katana', 'cutting', 'cut', 'kniv', 'svärd',
-                     'fountainpens', 'fountainpen'),
+                     'fountainpens', 'fountainpen', 'pen', 'penis'),
 
         'claw':     ('claw', 'hook', 'klo', 'krok'),
 
