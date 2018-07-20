@@ -737,7 +737,7 @@ async def _rps_scores(ctx, request, *kwargs):
 
     # let's make sure there's at least 1 line in score_file
     if len(score_file) == 0:
-        score_file.append([ctx.author.id, 0, 0, 0])
+        score_file.append(str(ctx.author.id) + ' 0 0 0')
 
     entries_to_delete = list()
     scoretuple = collections.namedtuple('Score', ['user','wins', 'losses', 'draws', 'percentage', 'total'])
@@ -751,7 +751,10 @@ async def _rps_scores(ctx, request, *kwargs):
 
         # Now let's add a winning percentage.
         total_no_games = score_file[i][1] + score_file[i][2] + score_file[i][3]
-        win_percentage = float(score_file[i][1] / total_no_games)
+        if total_no_games == 0:
+            win_percentage = 0
+        else:
+            win_percentage = float(score_file[i][1] / total_no_games)
         score_file[i].append(win_percentage)
 
         # Now we're changing the snowflake into an abc.snowflake.
@@ -869,16 +872,33 @@ async def _rps_scores(ctx, request, *kwargs):
     if request == 'user':
         return getUserStats(ctx.message.mentions)
 
+
     if request == 'add':
         for i in range(len(score_file)):
-            if ctx.author.id == i.user.id:
+            if ctx.author.id == score_file[i].user.id:
+                user = score_file[i].user
+                wins = score_file[i].wins
+                losses = score_file[i].losses
+                draws = score_file[i].draws
+                # total not defined yet
+                # percentage not defined yet
                 if 'won' in kwargs:
-                    i.wins += 1
+                    wins += 1
                 elif 'lost' in kwargs:
-                    i.losses += 1
+                    losses += 1
                 elif 'draw' in kwargs:
-                    i.draws += 1
-        return(getUserStats([ctx.author.id]))
+                    draws += 1
+                total = wins + losses + draws
+                percentage = float(wins / total)
+                score_file[i] = scoretuple(user = user, wins = wins, losses = losses,
+                                           draws = draws, percentage = percentage, total = total)
+        # Now we'll update the score file
+        new_file = open('config/rps_stats', 'w')
+        for i in score_file:
+            new_file.write(str(i.user.id) + ' ' + str(i.wins) + ' ' + str(i.losses) + ' ' + str(i.draws))
+
+        userdiscriminator = ('**' + ctx.author.name + '#' + str(ctx.author.discriminator) + '**\n')
+        return(getUserStats([ctx.author]).replace(userdiscriminator, ''))
 
 
 ########### rps #############
@@ -886,17 +906,22 @@ async def _rps_scores(ctx, request, *kwargs):
 #############################
 @bot.command(name='rps')
 async def _rps(ctx, *kwargs):
+    # If empty, default to help.
     if not kwargs:
         kwargs = ('help',)
 
+    # If help, show contents of config/rps_help
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + open('config/rps_help', 'r').read())
         await commandlog(ctx, 'HELP', 'RPS')
         return
 
+    # This makes the kwargs into a list and makes them all lowercase.
     kwargs = list_kwargs(kwargs)
 
     if ('stats' in kwargs or 'statistics' in kwargs or 'score' in kwargs or 'scoreboard' in kwargs):
+        # If no mentions, show scoreboard.
+        # Defaults to percentage if nothing else is specified.
         if len(ctx.message.mentions) == 0:
             if 'wins' in kwargs or 'win' in kwargs:
                 scoreboard = 'wins'
@@ -906,10 +931,11 @@ async def _rps(ctx, *kwargs):
                 scoreboard = 'draws'
             elif 'total' in kwargs or 'totals' in kwargs:
                 scoreboard = 'total'
-            else: # percentage is default
+            else: # The default option.
                 scoreboard = 'percentage'
 
-            await ctx.channel.send()
+            # Get scoreboard from _rps_scores() and send it.
+            await ctx.channel.send(await _rps_scores(ctx, scoreboard))
             await commandlog(ctx, 'SCORE', 'RPS', ('User asked for ' + scoreboard + '.'))
             return
 
@@ -927,148 +953,148 @@ async def _rps(ctx, *kwargs):
     if 'fountain' in kwargs and 'pen' in kwargs or 'fountain' in kwargs and 'pens' in kwargs:
         kwargs = ('fountainpen',)
 
-    rock_alts = ( 'stone', 'rock', 'r', 'rok', 'stnoe', 'stoen', 'sten' )
+    aliases = {
+        'rock':     ('stone', 'rock', 'r', 'rok', 'stnoe', 'stoen', 'sten'),
 
-    scissor_alts = ('scissor', 'scissors', 's', 'scisor', 'scisors', 'sc',
-                    'sissor', 'sissors', 'sax' 'scisor', 'scisors', 'sisor',
-                    'sisors' )
+        'scissors': ('scissor', 'scissors', 's', 'scisor', 'scisors', 'sc',
+                     'sissor', 'sissors', 'sax' 'scisor', 'scisors', 'sisor',
+                     'sisors'),
 
-    paper_alts = ( 'paper', 'papers', 'ink', 'paperbag', 'påse', 'bag', 'papper',
-                   'papperspåse', 'peiper', 'pejper', 'p', 'b', 'bic', 'ballpoint',
-                   'rollerball' )
+        'paper':    ('paper', 'papers', 'ink', 'paperbag', 'påse', 'bag', 'papper',
+                     'papperspåse', 'peiper', 'pejper', 'p', 'b', 'bic', 'ballpoint',
+                     'rollerball'),
 
-    bomb_alts = ( 'nuke', 'bomb', 'atombomb', 'smällkaramell', 'smälkaramell',
-                  'smälkaramel', 'dynamite', 'bang', 'kaboom', 'smällkarammell',
-                  'smälkarammell', 'smälkarammel', 'dynamit' )
+        'bomb':     ('nuke', 'bomb', 'atombomb', 'smällkaramell', 'smälkaramell',
+                     'smälkaramel', 'dynamite', 'bang', 'kaboom', 'smällkarammell',
+                     'smälkarammell', 'smälkarammel', 'dynamit'),
 
-    knife_alts = ( 'knife', 'sword', 'katana', 'cutting', 'cut', 'kniv', 'svärd',
-                   'fountainpens', 'fountainpen' )
+        'knife':    ('knife', 'sword', 'katana', 'cutting', 'cut', 'kniv', 'svärd',
+                     'fountainpens', 'fountainpen'),
 
-    claw_alts = ( 'claw', 'hook', 'klo', 'krok' )
+        'claw':     ('claw', 'hook', 'klo', 'krok'),
 
-    random_alts = ( 'random', 'slump', 'chance', 'chans' )
+        'random':   ('random', 'slump', 'chance', 'chans'),
 
-    swedish_terms = ( 'sten', 'sax', 'påse', 'dynamit', 'kniv', 'svärd', 'klo',
-                      'krok', 'slump', 'chans')
+        'swedish':  ('sten', 'sax', 'påse', 'dynamit', 'kniv', 'svärd', 'klo',
+                    'krok', 'slump', 'chans'),
+    }
 
-    # Easter egg
-    swedish_mode = False
-    if kwargs[0] in swedish_terms:
-        swedish_mode = True
+    # Swedish or Imperialist mode?
+    swe_mode = False # defaults to false
+    for i in kwargs:
+        if i in aliases['swedish']:
+            swe_mode = True
 
-    # Lazy fuck
-    if kwargs[0] == 'random':
-        kwargs = random.randint(1,3)
-        if not random.randint(0,3): # 1/4 chance of being hc mode.
+    # Let's give the cpu a choice.
+    cpu_choice = random.choice(('rock', 'paper', 'scissors'))
+
+    hc_mode = False # default
+    for i in kwargs:
+        if i in aliases['rock']:
+            choice = 'rock'
+        elif i in aliases['claw']:
+            choice = 'rock'
             hc_mode = True
+        elif i in aliases['scissors']:
+            choice = 'scissors'
+        elif i in aliases['bomb']:
+            choice = 'scissors'
+            hc_mode = True
+        elif i in aliases['paper']:
+            choice = 'paper'
+        elif i in aliases['knife']:
+            choice = 'paper'
+            hc_mode = True
+        elif i == 'random':
+            if random.randint(0,3):
+                choice = random.choice('rock', 'scissors', 'paper')
+            else:
+                choice = random.choice('claw', 'bomb', 'knife')
+                hc_mode = True
+        else:
+            await ctx.channel.send('Your choice doesn\'t make any sense you smud.')
+            await commandlog(ctx, 'FAIL', 'RPS', 'Player choice not in dictionary.')
+            return
 
-    # HC mode uses bomb/knife/claw instead
-    # These correspond to rock/paper/scissor
-    hc_mode = False
-
-    if kwargs[0] in rock_alts:
-        choice = 1
-        choice_txt = 'rock'
-    elif kwargs[0] in scissor_alts:
-        choice = 2
-        choice_txt = 'scissors'
-    elif kwargs[0] in paper_alts:
-        choice = 3
-        choice_txt = 'paper'
-    elif kwargs[0] in bomb_alts:
-        choice = 2 # scissors
-        choice_txt = 'bomb'
-        hc_mode = True
-    elif kwargs[0] in knife_alts:
-        choice = 3 # paper
-        choice_txt = 'knife'
-        hc_mode = True
-    elif kwargs[0] in claw_alts:
-        choice = 1 # rock
-        choice_txt = 'claw'
-        hc_mode = True
-    else:
-        choice = 0 # this means no choice
-
-    if choice == 0:
-        await ctx.channel.send(ctx.author.mention + ' That choice doesn\'t make any sense you smud!')
-        await commandlog(ctx, 'FAIL', 'RPS', 'Choice not in lists: ' + str(kwargs))
-
-    cpu_choice = random.randint(0,3)
+    # Determining winner...
     if choice == cpu_choice:
         result = 'draw'
-    else:
-        if choice == 1: # rock
-            if cpu_choice == 2: # scissors
-                result = 'won' # rock beats scissors
-            elif cpu_choice == 3: # paper
-                result = 'lost' # paper beats rock
+    elif choice == 'rock' or choice == 'claw':
+        if cpu_choice == 'scissors':
+            result = 'won'
+        else:
+            result = 'lost'
 
-        elif choice == 2: # scissors
-            if cpu_choice == 1: # rock
-                result = 'lost' # rock beats scissors
-            if cpu_choice == 3: # paper
-                result = 'won' # scissors beats paper
+    elif choice == 'scissors' or choice == 'bomb':
+        if cpu_choice == 'paper':
+            result = 'won'
+        else:
+            result = 'lost'
 
-        elif choice == 3: # paper
-            if cpu_choice == 1: # rock
-                result = 'won' # paper beats rock
-            elif cpu_choice == 2: # scissors
-                result = 'lost' # scissors beats paper
+    elif choice == 'paper' or choice == 'knife':
+        if cpu_choice == 'rock':
+            result = 'won'
+        else:
+            result = 'lost'
 
-    if not hc_mode:
-        if cpu_choice == 1:
-            cpu_choice_txt = 'rock'
-            if swedish_mode:
-                cpu_choice_txt = 'sten'
-        if cpu_choice == 2:
-            cpu_choice_txt = 'scissors'
-            if swedish_mode:
-                cpu_choice_txt = 'sax'
-        if cpu_choice == 3:
-            cpu_choice_txt = 'paper'
-            if swedish_mode:
-                cpu_choice_txt = 'påse'
-    else:
-        if cpu_choice == 1:
-            cpu_choice_txt = 'claw'
-            if swedish_mode:
-                cpu_choice_txt = 'klo'
-        if cpu_choice == 2:
-            cpu_choice_txt = 'bomb'
-            # same in swedish
-        if cpu_choice == 3:
-            cpu_choice_txt = 'knife'
-            if swedish_mode:
-                cpu_choice_txt = 'kniv'
+    def HCTranslate(term):
+        if term == 'rock':
+            return 'claw'
+        elif term == 'scissors':
+            return 'bomb'
+        elif term == 'paper':
+            return 'knife'
+
+    # Now we'll translate the choices in case of swedish mode.
+    def SweTranslate(term):
+        if term == 'rock':
+            return 'sten'
+        elif term == 'scissors':
+            return 'sax'
+        elif term == 'paper':
+            return 'påse'
+        elif term == 'claw':
+            return 'klo'
+        elif term == 'bomb':
+            return 'bomb'
+        elif term == 'knife':
+            return 'kniv'
+
+    if hc_mode == True:
+        choice = HCTranslate(choice)
+        cpu_choice = HCTranslate(cpu_choice)
+    if swe_mode == True:
+        choice = SweTranslate(choice)
+        cpu_choice = SweTranslate(cpu_choice)
 
     # Determining result message
     if result == 'draw':
-        if not swedish_mode:
-            result_message = 'The battle ended in a draw with both people choosing ' + choice_txt
+        if not swe_mode:
+            result_message = 'The battle ended in a draw with both choosing **' + str(choice) + '**.'
         else:
-            result_message = 'Striden avslutades oavgjort eftersom båda spelarna valde ' + choice_txt
+            result_message = 'Striden avslutades oavgjort eftersom båda spelarna valde **' + str(choice) + '**.'
 
     elif result == 'won':
-        if not swedish_mode:
-            result_message = 'You chose ' + choice_txt + ' which beats my ' + cpu_choice_txt + ' by a small margin!'
+        if not swe_mode:
+            result_message = 'You chose **' + str(choice) + '** which beats my **' + str(cpu_choice) + '** by a small margin!'
         else:
-            result_message = 'Du valde ' + choice_txt + ' vilket är precis tillräckligt för att slå min ' + cpu_choice_txt + '!'
+            result_message = 'Du valde **' + str(choice) + '** vilket är precis tillräckligt för att slå min **' + str(cpu_choice) + '**!'
 
     elif result == 'lost':
-        if not swedish_mode:
-            result_message = 'I chose ' + cpu_choice_txt + ' which beats your smuddy little ' + choice_txt + ' by a GINORMOUS margin!'
+        if not swe_mode:
+            result_message = 'I chose **' + str(cpu_choice) + '** which beats your smuddy little **' + str(choice) + '** by a GINORMOUS margin!'
         else:
-            result_message = 'Jag valde ' + cpu_choice_txt + ' vilket slår din fåniga lilla ' + choice_txt + 'med RÅGE!'
+            result_message = 'Jag valde **' + str(cpu_choice) + '** vilket slår din fåniga lilla **' + str(choice) + '** med RÅGE!'
 
     # Registering new scores
-    if not swedish_mode:
-        result_message += '\n\nThis is your new total score: \n' + str(await _rps_scores(ctx, result))
+    if not swe_mode:
+        result_message += '\n' + str(await _rps_scores(ctx, 'add', result))
     else:
-        result_message += '\n\nDet här är din nya poängställning: \n' + str(await _rps_scores(ctx, result))
+        result_message += '\n' + str(await _rps_scores(ctx, 'add', result))
 
     # Sending result message + new scores
     await ctx.channel.send(result_message)
+    await commandlog(ctx, 'SUCCESS', 'RPS', 'The result was: ' + result)
 
 ###### region #######
 ### SELECT REGION ###

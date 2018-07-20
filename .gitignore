@@ -2,3 +2,4 @@ token
 logs
 experimentation.py
 .DS_Store
+config/rps_stats

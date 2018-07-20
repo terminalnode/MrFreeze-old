@@ -25,6 +25,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
 * **!mrfreeze** - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
 * **!dummies**  - Invite links for the dummy bots Ba'athman and Robin.
+* **!rps**      - Play rock, paper, scissors with the bot. With scores!
 
 ### Next up
 * **!kick**     - (Mod) Kicks the user from the server.
@@ -33,5 +34,4 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!mute**     - (Mod) Mutes the user.
 * **!botnick**  - (Mod) Changes the nick of the bot.
 * **!quote**    - (Mod) Add, delete, and (All) read random quotes.
-* **!rps**      - Play rock, paper, scissors with the bot.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
