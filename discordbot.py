@@ -139,7 +139,7 @@ async def _mrfreeze(ctx, *kwargs):
     if len(kwargs) == 0:
         await ctx.channel.send(mrfreezequote().replace('Batman', ctx.author.mention).replace('Gotham', ctx.channel.mention))
 
-    elif 'help' in kwargs or 'what' in kwargs or 'wtf' in kwargs or 'explanation' in kwargs:
+    elif 'help' in kwargs or 'what' in kwargs or 'wtf' in kwargs or 'explain' in kwargs:
         await ctx.channel.send('*!mrfreeze* will post a dank Dr. Freeze quote from Batman & Robin. ' +
                                'All instances of Batman are replaced with your name, and all instances of Gotham are replaced with the channel name.')
         await commandlog(ctx, 'HELP', 'MRFREEZE', ('Arguments used: ' + str(kwargs)))
