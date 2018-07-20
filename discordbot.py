@@ -100,7 +100,7 @@ async def commandlog(ctx, log_category, used_command, *kwargs):
 
 def mrfreezequote():
     with open('config/mrfreezequotes', 'r') as f:
-        return random.choice(f.read().split('\n'))
+        return random.choice(f.read().strip().split('\n'))
 
 # This will be printed in the console once the
 # bot has been connected to discord.
