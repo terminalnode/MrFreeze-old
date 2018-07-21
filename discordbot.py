@@ -1098,7 +1098,9 @@ async def _rps(ctx, *kwargs):
         'random':   ('random', 'slump', 'chance', 'chans'),
 
         'swedish':  ('sten', 'sax', 'påse', 'dynamit', 'kniv', 'svärd', 'klo',
-                    'krok', 'slump', 'chans'),
+                     'krok', 'slump', 'chans', 'atombomb', 'smällkaramell',
+                     'smälkaramell', 'smälkaramel', 'smällkarammell',
+                     'smälkarammell', 'smälkarammel', 'dynamit'),
     }
 
     # Swedish or Imperialist mode?
@@ -1127,7 +1129,7 @@ async def _rps(ctx, *kwargs):
         elif i in aliases['knife']:
             choice = 'paper'
             hc_mode = True
-        elif i == 'random':
+        elif i in aliases['random']:
             if random.randint(0,3):
                 choice = random.choice(['rock', 'scissors', 'paper'])
             else:
