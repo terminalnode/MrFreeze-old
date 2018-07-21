@@ -381,7 +381,6 @@ async def _rules(ctx, *kwargs):
     if len(ruleprint) == 0:
         if len(kwargs) > 1:
             await ctx.channel.send(ctx.author.mention + ' None of those are real rules, you ignorant smud.')
-            print('uhh')
         else:
             await ctx.channel.send(ctx.author.mention + ' That\'s not a real rule, you ignorant smud.')
 
@@ -954,7 +953,6 @@ async def _rps_scores(ctx, request, *kwargs):
 
         scores_counter = 0
         for i in relevant_results:
-            print(str(i))
             # **1.** @TerminalNode#1234
             scoreboard_msg += '**' + str(scores_counter + 1) + '.** ' + i
             # **1.** @TerminalNode1234 | Percentage: 12%\n
@@ -1018,7 +1016,6 @@ async def _rps_scores(ctx, request, *kwargs):
                                            draws = draws, percentage = percentage, total = total)
         # Now we'll update the score file
         new_file = open('config/rps_stats', 'w')
-        print(score_file)
         for i in score_file:
             new_file.write(str(i.user.id) + ' ' + str(i.wins) + ' ' + str(i.losses) + ' ' + str(i.draws) + '\n')
 
@@ -1111,7 +1108,7 @@ async def _rps(ctx, *kwargs):
             swe_mode = True
 
     # Let's give the cpu a choice.
-    cpu_choice = random.choice(('rock', 'paper', 'scissors'))
+    cpu_choice = random.choice(['rock', 'paper', 'scissors'])
 
     hc_mode = False # default
     for i in kwargs:
@@ -1132,9 +1129,9 @@ async def _rps(ctx, *kwargs):
             hc_mode = True
         elif i == 'random':
             if random.randint(0,3):
-                choice = random.choice('rock', 'scissors', 'paper')
+                choice = random.choice(['rock', 'scissors', 'paper'])
             else:
-                choice = random.choice('claw', 'bomb', 'knife')
+                choice = random.choice(['claw', 'bomb', 'knife'])
                 hc_mode = True
         else:
             await ctx.channel.send('Your choice doesn\'t make any sense you smud.')
@@ -1169,6 +1166,8 @@ async def _rps(ctx, *kwargs):
             return 'bomb'
         elif term == 'paper':
             return 'knife'
+        else:
+            return term
 
     # Now we'll translate the choices in case of swedish mode.
     def SweTranslate(term):
