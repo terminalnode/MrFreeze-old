@@ -17,6 +17,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
 * **!dmcl**     - (Mod) DM commandlog file for the current server to author.
 * **!ban**      - (Mod) Bans the user from the server.
+* **!kick**     - (Mod) Kicks the user from the server.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
 * **!source**   - Posts a link to this github page.
@@ -28,10 +29,10 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!rps**      - Play rock, paper, scissors with the bot. With scores!
 
 ### Next up
-* **!kick**     - (Mod) Kicks the user from the server.
+* **!mute**     - (Mod) Mutes the user.
+* **!unmute**     - (Mod) Unmutes the user.
 
 ### Planned but not yet implemented
-* **!mute**     - (Mod) Mutes the user.
 * **!botnick**  - (Mod) Changes the nick of the bot.
 * **!quote**    - (Mod) Add, delete, and (All) read random quotes.
 * **!inactive** - (Mod) Get a list of inactive users.

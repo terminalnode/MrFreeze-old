@@ -226,8 +226,6 @@ async def _banish(ctx, *kwargs):
 ######## dmcl ########
 ### DM COMMAND LOG ###
 ######################
-# mod only
-# should also have an option to delete the old commandlog
 @bot.command(name='dmcl')
 async def _dmcl(ctx, *kwargs):
     # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
@@ -643,16 +641,64 @@ async def _kick(ctx, *kwargs):
         await commandlog(ctx, 'FAIL', 'KICK', 'Lack required priveligies.')
         return
 
-    # Now back to our regular schedule.
-    victims = ctx.message.mentions
-    victims_list = get_mentions(victims)
-    kwargs = list_kwargs(kwargs)
+    if not kwargs:
+        kwargs = ('help',)
+
+    if not len(ctx.message.mentions):
+        kwargs = ('help',)
+
+    kwargs = list_kwargs(kwargs) # makes all lower-case and puts into list
 
     if 'help' in kwargs:
-        await ctx.channel.send(ctx.author.mention + ' Help message for kick goes here.')
+        await ctx.channel.send(ctx.author.mention + ' ' +
+                              'To kick a user, simply type !kick followed by a mention of the user. ' +
+                              'Requires mod privilegies. Can\'t kick mods.')
         await commandlog(ctx, 'HELP', 'KICK')
         return
 
+    # Now back to our regular schedule.
+    victims = ctx.message.mentions
+    commandlog_success = list()
+    commandlog_fails = list()
+
+    for victim in victims:
+        try:
+            if not await is_mod(ctx, victim):
+                await ctx.guild.kick(victim)
+                commandlog_success.append(victim)
+            else:
+                commandlog_fails.append(victim)
+        except:
+            commandlog_fails.append(victim)
+
+    # Now all who can be banned are banned, let's make a list.
+    def fixlists(commandlog_list):
+        if len(commandlog_list) != 0:
+            mentions = get_mentions(commandlog_list)
+            return [ i.name + '#' + str(i.discriminator) for i in commandlog_list ], mentions
+        else:
+            return list(), str()
+
+    commandlog_success, mentions_success = fixlists(commandlog_success)
+    commandlog_fails, mentions_fails = fixlists(commandlog_fails)
+
+    return_msg = str()
+    if commandlog_success:
+        return_msg += '\nThe following users were successfully kicked: ' + mentions_success + '\n'
+    if commandlog_fails:
+        return_msg += '\nI wasn\'t allowed to kick these users: ' + mentions_fails
+    return_msg = return_msg.strip()
+
+    if not return_msg:
+        await ctx.channel.send(ctx.author.mention + ' No failed kicks, no successful kicks. Idk wtf just happened.')
+        await commandlog(ctx, 'FAIL', 'KICK', 'No failed or successful kicks.')
+        return
+
+    await ctx.channel.send(ctx.author.mention + ' ' + return_msg)
+    await commandlog(ctx, 'SUCCESS', 'KICK',
+                     'Kicked: ' + str(commandlog_success),
+                     'Not kicked: ' + str(commandlog_fails))
+    return
 
 
 ####### inactive #########
