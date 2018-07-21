@@ -1561,7 +1561,7 @@ async def _source(ctx, *kwargs):
 async def _readme(ctx, *kwargs):
     await ctx.channel.send('This may be more information than you\'re looking for, ' +
                            'but here\'s a link to the readme for you:\n' +
-                           'https://github.com/kaminix/MrFreeze/blob/master/README.md')
+                           '<https://github.com/kaminix/MrFreeze/blob/master/README.md>')
     await commandlog(ctx, 'SUCCESS', 'README')
 
 ####### dummies ########
