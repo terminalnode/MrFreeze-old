@@ -44,3 +44,5 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * Error handling for unregistered commands.
 * Some way of checking that the antarctica role has the correct settings in all channels.
 * **!git** owner command to update the bot via git.
+* Add option for **!ban** to be time specific.
+* Add alias !score for !rps score.
