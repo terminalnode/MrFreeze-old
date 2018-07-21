@@ -794,44 +794,9 @@ async def _rps_scores(ctx, request, *kwargs):
         # we need functions for the following:
         # 'wins', 'losses', 'draws', 'percentage', 'total'
         relevant_results = {
-            i.user: getattr(i, chosen_type)
+            '**' + i.user.name + '#' + str(i.user.discriminator) + '**': getattr(i, chosen_type)
             for i in sorted(score_file, key=lambda x:getattr(x, chosen_type), reverse=True)
         }
-#        def takeWins(elem):
-#            return elem.wins
-#        def takeLosses(elem):
-#            return elem.losses
-#        def takeDraws(elem):
-#            return elem.draws
-#        def takePercentage(elem):
-#            return elem.percentage
-#        def takeTotal(elem):
-#            return elem.total
-#
-#        def getUsername(user):
-#            return '**' + user.name + '#' + i.user.discriminator + '**'
-#
-#        relevant_results = list()
-#        if chosen_type == 'wins':
-#            score_file = sorted(score_file, key=takeWins, reverse=True)
-#            for i in score_file:
-#                relevant_results.append([getUsername(i.user), i.wins])
-#        elif chosen_type == 'losses':
-#            score_file = sorted(score_file, key=takeLosses, reverse=True)
-#            for i in score_file:
-#                relevant_results.append([getUsername(i.user), i.losses])
-#        elif chosen_type == 'draws':
-#            score_file = sorted(score_file, key=takeDraws, reverse=True)
-#            for i in score_file:
-#                relevant_results.append([getUsername(i.user), i.draws])
-#        elif chosen_type == 'percentage':
-#            score_file = sorted(score_file, key=takePercentage, reverse=True)
-#            for i in score_file:
-#                relevant_results.append([getUsername(i.user), '{:.1%}'.format(i.percentage)])
-#        elif chosen_type == 'total':
-#            score_file = sorted(score_file, key=takeTotal, reverse=True)
-#            for i in score_file:
-#                relevant_results.append([getUsername(i.user), i.total])
 
         # Now let's format the results.
         if chosen_type == 'total':
@@ -847,21 +812,13 @@ async def _rps_scores(ctx, request, *kwargs):
         for i in relevant_results:
             print(str(i))
             # **1.** @TerminalNode#1234
-            scoreboard_msg += '**' + str(scores_counter + 1) + '. ' + i.name + '#' + str(i.discriminator) + '**'
+            scoreboard_msg += '**' + str(scores_counter + 1) + '.** ' + i
             # **1.** @TerminalNode1234 | Percentage: 12%\n
-            scoreboard_msg += ' | ' + chosen_type.capitalize() + ': ' + str(relevant_results[i]) + '\n'
+            scoreboard_msg += '  |  ' + chosen_type.capitalize() + ': ' + str(relevant_results[i]) + '\n'
             scores_counter += 1
             if scores_counter == 10:
                 break
 
-#        for i in range(10):
-#            # **1.** @TerminalNode
-#            scoreboard_msg += '**' + str(i+1) + '.** ' + relevant_results[i][0]
-#            # **1.** @TerminalNode | Percentage: 12%\n
-#            scoreboard_msg += ' | ' + chosen_type.capitalize() + ': ' + str(relevant_results[i][1]) + '\n'
-#            # if we're at end of list, break
-#            if len(relevant_results) == i+1:
-#                break
         scoreboard_msg = scoreboard_msg.strip()
 
         return scoreboard_msg
