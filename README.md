@@ -18,6 +18,8 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!dmcl**     - (Mod) DM commandlog file for the current server to author.
 * **!ban**      - (Mod) Bans the user from the server.
 * **!kick**     - (Mod) Kicks the user from the server.
+* **!mute**     - (Mod) Mutes the user.
+* **!unmute**   - (Mod) Unmutes the user.
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
 * **!source**   - Posts a link to this github page.
@@ -29,11 +31,9 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!rps**      - Play rock, paper, scissors with the bot. With scores!
 
 ### Next up
-* **!mute**     - (Mod) Mutes the user.
-* **!unmute**     - (Mod) Unmutes the user.
+* **!inactive** - (Mod) Get a list of inactive users.
 
 ### Planned but not yet implemented
 * **!botnick**  - (Mod) Changes the nick of the bot.
 * **!quote**    - (Mod) Add, delete, and (All) read random quotes.
-* **!inactive** - (Mod) Get a list of inactive users.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.

@@ -651,8 +651,8 @@ async def _kick(ctx, *kwargs):
 
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' ' +
-                              'To kick a user, simply type !kick followed by a mention of the user. ' +
-                              'Requires mod privilegies. Can\'t kick mods.')
+                              '**!kick** To kick people, type !kick followed ' +
+                              'by the people you wish to kick. Can\'t kick mods.')
         await commandlog(ctx, 'HELP', 'KICK')
         return
 
@@ -713,28 +713,76 @@ async def _inactive(ctx, *kwargs):
 
 ##### mute ######
 ### MUTE USER ###
-#################
+###########################################################
+###  The role corresponding to mute in this bot is the  ###
+### Antarctica role. So that's what we'll be assigning. ###
+###########################################################
 @bot.command(name='mute')
 async def _mute(ctx, *kwargs):
     # If is_smud(user): get fucked.
     if await is_mod(ctx, ctx.author) == False:
-        await ctx.channel.send(ctx.author.mention + ' You need to be mod to mute people.')
+        await ctx.channel.send(ctx.author.mention + ' You need to be mod to kick people.')
         await commandlog(ctx, 'FAIL', 'MUTE', 'Lack required priveligies.')
+        return
+
+    if not kwargs:
+        kwargs = ('help',)
+
+    if not len(ctx.message.mentions):
+        kwargs = ('help',)
+
+    kwargs = list_kwargs(kwargs) # makes all lower-case and puts into list
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' ' +
+                              '**!mute** To mute people, type !mute followed ' +
+                              'by the people you wish to mute. Can\'t mute mods.')
+        await commandlog(ctx, 'HELP', 'MUTE')
         return
 
     # Now back to our regular schedule.
     victims = ctx.message.mentions
-    victims_list = get_mentions(victims)
-    kwargs = list_kwargs(kwargs)
+    commandlog_success = list()
+    commandlog_fails = list()
 
-    if 'help' in kwargs:
-        await ctx.channel.send(ctx.author.mention + ' Help message for mute goes here.')
-        await commandlog(ctx, 'HELP', 'MUTE')
+    for victim in victims:
+        try:
+            if not await is_mod(ctx, victim):
+                await victim.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+                commandlog_success.append(victim)
+            else:
+                commandlog_fails.append(victim)
+        except:
+            commandlog_fails.append(victim)
+
+    # Now all who can be banned are banned, let's make a list.
+    def fixlists(commandlog_list):
+        if len(commandlog_list) != 0:
+            mentions = get_mentions(commandlog_list)
+            return [ i.name + '#' + str(i.discriminator) for i in commandlog_list ], mentions
+        else:
+            return list(), str()
+
+    commandlog_success, mentions_success = fixlists(commandlog_success)
+    commandlog_fails, mentions_fails = fixlists(commandlog_fails)
+
+    return_msg = str()
+    if commandlog_success:
+        return_msg += '\nThe following users were successfully muted: ' + mentions_success + '\n'
+    if commandlog_fails:
+        return_msg += '\nI wasn\'t allowed to mute these users: ' + mentions_fails
+    return_msg = return_msg.strip()
+
+    if not return_msg:
+        await ctx.channel.send(ctx.author.mention + ' No failed mutes, no successful mutes. Idk wtf just happened.')
+        await commandlog(ctx, 'FAIL', 'MUTE', 'No failed or successful mutes.')
         return
 
-
-
-
+    await ctx.channel.send(ctx.author.mention + ' ' + return_msg)
+    await commandlog(ctx, 'SUCCESS', 'MUTE',
+                     'Muted: ' + str(commandlog_success),
+                     'Not muted: ' + str(commandlog_fails))
+    return
 
 
 ##### unmute ######
@@ -748,16 +796,66 @@ async def _unmute(ctx, *kwargs):
         await commandlog(ctx, 'FAIL', 'UNMUTE', 'Lack required priveligies.')
         return
 
+    if not kwargs:
+        kwargs = ('help',)
+
+    if not len(ctx.message.mentions):
+        kwargs = ('help',)
+
+    kwargs = list_kwargs(kwargs) # makes all lower-case and puts into list
+
+    if 'help' in kwargs:
+        await ctx.channel.send(ctx.author.mention + ' ' +
+                              '**!unmute** To unmute people type !unmute followed ' +
+                              'by the people you wish to unmute.')
+        await commandlog(ctx, 'HELP', 'UNMUTE')
+        return
+
     # Now back to our regular schedule.
     victims = ctx.message.mentions
-    victims_list = get_mentions(victims)
-    kwargs = list_kwargs(kwargs)
+    commandlog_success = list()
+    commandlog_fails = list()
 
     if 'help' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' Help message for unmute goes here.')
         await commandlog(ctx, 'HELP', 'UNMUTE')
         return
 
+    for victim in victims:
+        try:
+            await victim.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+            commandlog_success.append(victim)
+        except:
+            commandlog_fails.append(victim)
+
+    # Now all who can be banned are banned, let's make a list.
+    def fixlists(commandlog_list):
+        if len(commandlog_list) != 0:
+            mentions = get_mentions(commandlog_list)
+            return [ i.name + '#' + str(i.discriminator) for i in commandlog_list ], mentions
+        else:
+            return list(), str()
+
+    commandlog_success, mentions_success = fixlists(commandlog_success)
+    commandlog_fails, mentions_fails = fixlists(commandlog_fails)
+
+    return_msg = str()
+    if commandlog_success:
+        return_msg += '\nThe following users were successfully unmuted: ' + mentions_success + '\n'
+    if commandlog_fails:
+        return_msg += '\nI wasn\'t allowed to unmute these users: ' + mentions_fails
+    return_msg = return_msg.strip()
+
+    if not return_msg:
+        await ctx.channel.send(ctx.author.mention + ' No failed unmutes, no successful unmutes. Idk wtf just happened.')
+        await commandlog(ctx, 'FAIL', 'UNMUTE', 'No failed or successful unmutes.')
+        return
+
+    await ctx.channel.send(ctx.author.mention + ' ' + return_msg)
+    await commandlog(ctx, 'SUCCESS', 'UNMUTE',
+                     'Unmuted: ' + str(commandlog_success),
+                     'Not unmuted: ' + str(commandlog_fails))
+    return
 
 
 ###########################################################################################################
