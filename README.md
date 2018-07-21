@@ -34,4 +34,5 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!mute**     - (Mod) Mutes the user.
 * **!botnick**  - (Mod) Changes the nick of the bot.
 * **!quote**    - (Mod) Add, delete, and (All) read random quotes.
+* **!inactive** - (Mod) Get a list of inactive users.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
