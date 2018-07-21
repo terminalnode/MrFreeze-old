@@ -1554,6 +1554,16 @@ async def _source(ctx, *kwargs):
                            'https://github.com/kaminix/DrFreeze')
     await commandlog(ctx, 'SUCCESS', 'SOURCE')
 
+####### readme #######
+### GET THE README ###
+######################
+@bot.command(name='readme')
+async def _readme(ctx, *kwargs):
+    await ctx.channel.send('This may be more information than you\'re looking for, ' +
+                           'but here\'s a link to the readme for you:\n' +
+                           'https://github.com/kaminix/MrFreeze/blob/master/README.md')
+    await commandlog(ctx, 'SUCCESS', 'README')
+
 ####### dummies ########
 ### INVITE BA'ATHMAN ###
 ###### AND ROBIN #######

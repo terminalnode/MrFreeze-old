@@ -23,6 +23,7 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
 * **!rules**    - Displays one, several or all rules depending on how the command is executed.
 * **!source**   - Posts a link to this github page.
+* **!readme**   - Posts a link to the github page as well, but to the README.md file (this one!).
 * **!activity** - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
 * **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
 * **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
