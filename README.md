@@ -37,3 +37,10 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!botnick**  - (Mod) Changes the nick of the bot.
 * **!quote**    - (Mod) Add, delete, and (All) read random quotes.
 * **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
+* **!ink**      - Attempt to bring the ink look-up used on r/fountainpens to discord.
+
+### Under the hoood stuff
+* **!vote** needs a lookover and regex update for custom emoji as the current solution is bit of a hack.
+* Error handling for unregistered commands.
+* Some way of checking that the antarctica role has the correct settings in all channels.
+* **!git** owner command to update the bot via git.
