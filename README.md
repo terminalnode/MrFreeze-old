@@ -12,38 +12,38 @@ Not wanting to upload the token of my bot to github this is read from a separate
 Below is a list of implemented and planned commands, as well as what I'm currently working on. (Owner) indicates that only I can do it, if you want to use the command you have to run a separate bot and edit the ID that is allowed to do it. (Mod) indicates that only mods are allowed to issue the command.
 
 ### Fully implemented (as far as I know)
-* **!restart**  - (Owner) Restarts the bot completely. Very useful for testing new code.
-* **!unban**    - (Mod) Removes ban from the server.
-* **!banish**   - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
-* **!dmcl**     - (Mod) DM commandlog file for the current server to author.
-* **!ban**      - (Mod) Bans the user from the server.
-* **!kick**     - (Mod) Kicks the user from the server.
-* **!mute**     - (Mod) Mutes the user.
-* **!unmute**   - (Mod) Unmutes the user.
-* **!temp**     - Converts a temperature from fahrenheit to celcius and vice versa.
-* **!rules**    - Displays one, several or all rules depending on how the command is executed.
-* **!source**   - Posts a link to this github page.
-* **!readme**   - Posts a link to the github page as well, but to the README.md file (this one!).
-* **!activity** - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
-* **!region**   - Allows a user to assign a regional role such as continent (could also be used for countries).
-* **!vote**     - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
-* **!mrfreeze** - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
-* **!dummies**  - Invite links for the dummy bots Ba'athman and Robin.
-* **!rps**      - Play rock, paper, scissors with the bot. With scores!
+* **!restart**   - (Owner) Restarts the bot completely. Very useful for testing new code.
+* **!gitupdate** - (Owner) Fetches and pulls the latest version from github.
+* **!unban**     - (Mod) Removes ban from the server.
+* **!banish**    - (Mod) Assigns the tag 'Antarctica' to a user for five minutes.
+* **!dmcl**      - (Mod) DM commandlog file for the current server to author.
+* **!ban**       - (Mod) Bans the user from the server.
+* **!kick**      - (Mod) Kicks the user from the server.
+* **!mute**      - (Mod) Mutes the user.
+* **!unmute**    - (Mod) Unmutes the user.
+* **!temp**      - Converts a temperature from fahrenheit to celcius and vice versa.
+* **!rules**     - Displays one, several or all rules depending on how the command is executed.
+* **!source**    - Posts a link to this github page.
+* **!readme**    - Posts a link to the github page as well, but to the README.md file (this one!).
+* **!activity**  - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
+* **!region**    - Allows a user to assign a regional role such as continent (could also be used for countries).
+* **!vote**      - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
+* **!mrfreeze**  - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
+* **!dummies**   - Invite links for the dummy bots Ba'athman and Robin.
+* **!rps**       - Play rock, paper, scissors with the bot. With scores!
 
 ### Next up
-* **!inactive** - (Mod) Get a list of inactive users.
+* **!inactive**  - (Mod) Get a list of inactive users.
 
 ### Planned but not yet implemented
-* **!botnick**  - (Mod) Changes the nick of the bot.
-* **!quote**    - (Mod) Add, delete, and (All) read random quotes.
-* **!dice**     - Roll a select number of dice. Intend to also implement option to select type of dice.
-* **!ink**      - Attempt to bring the ink look-up used on r/fountainpens to discord.
+* **!botnick**   - (Mod) Changes the nick of the bot.
+* **!quote**     - (Mod) Add, delete, and (All) read random quotes.
+* **!dice**      - Roll a select number of dice. Intend to also implement option to select type of dice.
+* **!ink**       - Attempt to bring the ink look-up used on r/fountainpens to discord.
 
 ### Under the hoood stuff
 * **!vote** needs a lookover and regex update for custom emoji as the current solution is bit of a hack.
 * Error handling for unregistered commands.
 * Some way of checking that the antarctica role has the correct settings in all channels.
-* **!git** owner command to update the bot via git.
 * Add option for **!ban** to be time specific.
 * Add alias !score for !rps score.
