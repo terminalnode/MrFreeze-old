@@ -43,7 +43,6 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!ink**       - Attempt to bring the ink look-up used on r/fountainpens to discord.
 
 ### Under the hoood stuff
-* Error handling for unregistered commands.
 * Some way of checking that the antarctica role has the correct settings in all channels.
 * Add option for **!ban** to be time specific.
 * Add alias !score for !rps score.

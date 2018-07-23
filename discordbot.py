@@ -131,6 +131,14 @@ async def on_ready():
             'Middle East':      discord.utils.get(s_guild.roles, name='Middle East').id
         }
 
+@bot.event
+async def on_command_error(ctx, error):
+    get_command = re.compile('!\w+')
+    command = get_command.match(ctx.message.content).group()
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.channel.send(ctx.author.mention + ' The command **' + command + '** doesn\'t exist.')
+        await commandlog(ctx, 'FAIL', command[1:].upper(), 'Command does not exist.')
+
 ########## mrfreeze ###########
 ### PRINT A MR FREEZE QUOTE ###
 ###############################
