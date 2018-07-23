@@ -26,7 +26,8 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!readme**    - Posts a link to the github page as well, but to the README.md file (this one!).
 * **!activity**  - Changes the activity of the bot ('Playing [...]'). No mod requirement, have fun!
 * **!region**    - Allows a user to assign a regional role such as continent (could also be used for countries).
-* **!vote**      - Creates a vote where users vote by reacting with specified emoji. (works with server but not nitro emojis)
+* **!vote**      - Creates a vote where users vote by reacting with specified emoji.
+* * This does not work with nitro emojis, but does work with server emojis.
 * **!mrfreeze**  - Posts a dank Mr. Freeze quote from Batman & Robin. Replaces 'Batman' with you and 'Gotham' with channel name.
 * **!dummies**   - Invite links for the dummy bots Ba'athman and Robin.
 * **!rps**       - Play rock, paper, scissors with the bot. With scores!
@@ -42,7 +43,6 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * **!ink**       - Attempt to bring the ink look-up used on r/fountainpens to discord.
 
 ### Under the hoood stuff
-* **!vote** needs a lookover and regex update for custom emoji as the current solution is bit of a hack.
 * Error handling for unregistered commands.
 * Some way of checking that the antarctica role has the correct settings in all channels.
 * Add option for **!ban** to be time specific.
@@ -50,4 +50,3 @@ Below is a list of implemented and planned commands, as well as what I'm current
 * Cogs to organize code:
 * * **Example file:** https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be
 * * **PyPi entry for Cogs:** https://pypi.org/project/Cogs/
-

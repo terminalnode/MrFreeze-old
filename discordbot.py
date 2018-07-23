@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from subprocess import run, PIPE
 import logging, os, asyncio, sys, collections
-import time, fractions, signal, random
+import time, fractions, signal, random, re
 
 ### Cheat, how to make list comprehensions:
 ### [ expression for item in list if conditional ]
@@ -1383,26 +1383,36 @@ async def _vote(ctx, *kwargs):
         await commandlog(ctx, 'HELP', 'VOTE')
         return
 
+    # This separates the message by lines, skipping the first line.
     alternatives = (ctx.message.content.split('\n'))[1:]
     if len(alternatives) == 0:
         await ctx.channel.send('Need at least two lines to make a vote buddy.')
         await commandlog(ctx, 'FAIL', 'VOTE', 'Need at least two lines to make a vote.')
         return
 
-    did_react = False
+    match_emoji = re.compile('<:\w+:\d+>')
+    get_id = re.compile('\d+')
+    # match_emoji.match(emojistring).group(0) - Returns first match.
+    # match_emoji.match(emojistring) == None - Returns True if no matches found.
+
+
     # Going through all but the first line of the message.
     # First line is never gonna be part of the vote.
+    did_react = False
+    used_nitro = False
     for i in range(len(alternatives)):
-        if alternatives[i][0:8] == '<:emoji:': # identifying custom emojis
+        if not match_emoji.match(alternatives[i]) == None:
+            emoji_match = match_emoji.match(alternatives[i]).group()
+            emoji_id = get_id.search(emoji_match).group()
+
             try:
-                emoji_id = alternatives[i][8:26] # TODO Make regex :nauseated:
                 for i in ctx.guild.emojis:
-                    if emoji_id == i.id:
-                        emoji = i
-                await ctx.message.add_reaction(i)
+                    if int(emoji_id) == i.id:
+                        the_emoji = i
+                await ctx.message.add_reaction(the_emoji)
                 did_react = True
             except:
-                commandlog(ctx, '????', 'VOTE', 'Fucking nitro users screwing with me.')
+                used_nitro = True
         else:
             try:
                 await ctx.message.add_reaction(alternatives[i][0])
@@ -1411,13 +1421,26 @@ async def _vote(ctx, *kwargs):
                 pass
 
     if did_react == True:
-        await ctx.channel.send(ctx.author.mention + ' That\'s such a great proposition that I voted for everything!')
-        await commandlog(ctx, 'SUCCESS', 'VOTE')
+        if used_nitro == False:
+            await ctx.channel.send(ctx.author.mention + ' That\'s such a great proposition that I voted for everything!')
+            await commandlog(ctx, 'SUCCESS', 'VOTE')
+            return
+        else:
+            await ctx.channel.send(ctx.author.mention + 'That\'s such a great proposition I tried to vote for everything!\n' +
+                                  'However some of your alternatives used nitro emojis which I can\'t use.')
+            await commandlog(ctx, 'SUCCESS', 'VOTE' 'I couldn\'t do all reacts due to nitro emojis.')
+            return
     else:
-        await ctx.channel.send(ctx.author.mention +
-                        ' I couldn\'t find any alternatives to vote for, so I didn\'t vote for anything.')
-        await commandlog(ctx, 'FAIL', 'VOTE', 'No lines starting with emoji were found.')
-        return
+        if used_nitro == False:
+            await ctx.channel.send(ctx.author.mention +
+                                  ' I couldn\'t find any alternatives to vote for, so I didn\'t vote for anything.')
+            await commandlog(ctx, 'FAIL', 'VOTE', 'No lines starting with emoji were found.')
+            return
+        else:
+            await ctx.channel.send(ctx.author.mention +
+                                   'You only used nitro emojis, those won\'t work.')
+            await commandlog(ctx, 'FAIL', 'VOTE', 'Fucken nitro emojis.')
+            return
 
 ######### activity #########
 ### CHANGES BOT ACTIVITY ###
