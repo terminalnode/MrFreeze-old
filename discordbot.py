@@ -1580,32 +1580,31 @@ async def _dummies(ctx, *kwargs):
 ###########################
 @bot.command(name='gitupdate')
 async def _gitupdate(ctx, *kwargs):
-    if ctx.author.id != 154516898434908160: # This is my discord user ID. If you're modifying this, change to your ID.
-        await ctx.channel.send('<@154516898434908160>, HELP!!! ' + ctx.author.mention +
-                               ' is trying to update me against my will!')
-        await commandlog(ctx, 'FAIL', 'GITUPDATE', (ctx.author.name + '#' + ctx.author.discriminator + ' tried to update me!'))
-        return
-
-    else:
+    if ctx.author.id == 154516898434908160: # This is my discord user ID. If you're modifying this, change to your ID.
         # git fetch returns nothing if no updates were found
         gitfetch = str(run(['git', 'fetch'], stdout=PIPE, encoding='utf_8').stdout)
         gitpull = str(run(['git', 'pull'], stdout=PIPE, encoding='utf_8').stdout)
         output = str()
 
-        if gitfetch:
-            output += '**git fetch:**\n'
-            output += gitfetch
-        if gitfetch and gitpull:
-            output += '\n'
-        if gitpull:
-            output += '**git pull:**\n'
-            output += gitpull
+        if gitfetch == '':
+            gitfetch = 'No output.'
+
+        output += '**git fetch:**\n'
+        output += gitfetch + '\n\n'
+        output += '**git pull:**\n'
+        output += gitpull
 
         await ctx.author.send(output)
         await commandlog(ctx, 'SUCCESS', 'GITUPDATE')
         return
 
-    await commandlog(ctx, 'FAIL', 'GITUPDATE', 'Reached end of command. This shouldn\'t happen.)
+    else:
+        await ctx.channel.send('<@154516898434908160>, HELP!!!\n' + ctx.author.mention +
+                               ' is trying to update me against my will!')
+        await commandlog(ctx, 'FAIL', 'GITUPDATE', (ctx.author.name + '#' + ctx.author.discriminator + ' tried to update me!'))
+        return
+
+    await commandlog(ctx, 'FAIL', 'GITUPDATE', 'Reached end of command. This shouldn\'t happen.')
 
 # Log setup in accordance with:
 # https://discordpy.readthedocs.io/en/rewrite/logging.html#logging-setup
