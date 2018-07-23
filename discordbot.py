@@ -1104,7 +1104,7 @@ async def _rps(ctx, *kwargs):
 
         'claw':     ('claw', 'hook', 'klo', 'krok'),
 
-        'random':   ('random', 'slump', 'chance', 'chans', 'rdm', 'rndm', 'rand'),
+        'random':   ('random', 'slump', 'chance', 'chans', 'rdm', 'rndm', 'rand', 'rnd'),
 
         'swedish':  ('sten', 'sax', 'påse', 'dynamit', 'kniv', 'svärd', 'klo',
                      'krok', 'slump', 'chans', 'atombomb', 'smällkaramell',
