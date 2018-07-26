@@ -160,7 +160,7 @@ async def _mrfreeze(ctx, *kwargs):
         await ctx.channel.send(ctx.author.mention + ' No, *you* suck!')
 
     else:
-        await ctx.channel.send('No, bad ' + ctx.author.mention + '!\nType only *!mrfreeze* for dank Mr. Freeze quotes, or *!mrfreeze* what for an explanation.')
+        await ctx.channel.send('No, bad ' + ctx.author.mention + '!\nType only **!mrfreeze** for dank Mr. Freeze quotes, or **!mrfreeze what** for an explanation.')
 
     # Logging of command used. If any arguments were used these will be logged too.
     if len(kwargs) == 0:
