@@ -1069,7 +1069,6 @@ async def _rps(ctx, *kwargs):
 
     for i in specific_scores:
         for k in specific_scores[i]:
-            print(k)
             if k in kwargs:
                 kwargs = ['scores', i]
                 break
@@ -1168,11 +1167,9 @@ async def _rps(ctx, *kwargs):
             choice = 'paper'
             hc_mode = True
         elif i in aliases['random']:
-            if random.randint(0,3):
-                choice = random.choice(['rock', 'scissors', 'paper'])
-            else:
-                choice = random.choice(['claw', 'bomb', 'knife'])
+            if not random.randint(0,3):
                 hc_mode = True
+            choice = random.choice(['rock', 'scissors', 'paper'])
         else:
             await ctx.channel.send('Your choice doesn\'t make any sense you smud.')
             await commandlog(ctx, 'FAIL', 'RPS', 'Player choice not in dictionary.')
