@@ -112,7 +112,9 @@ async def on_ready():
     print ('User ID: ' + str(bot.user.id))
     print ('-----------')
     for i in bot.guilds:
-        await i.system_channel.send(':wave: ' + mrfreezequote())
+        bot_trash = discord.utils.get(i.channels, name='bot-trash')
+        await bot_trash.send(':wave: ' + mrfreezequote())
+
     await bot.change_presence(status=None, activity=
         discord.Activity(name='your commands...', type=discord.ActivityType.listening))
 
