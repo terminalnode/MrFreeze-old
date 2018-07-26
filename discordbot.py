@@ -160,7 +160,7 @@ async def _mrfreeze(ctx, *kwargs):
         await ctx.channel.send(ctx.author.mention + ' No, *you* suck!')
 
     elif 'die' in kwargs or ('kill' in kwargs and 'yourself' in kwargs):
-        await ctx.channel.send(ctx.author.mention + ' I\'m too cool to die.')
+        await ctx.channel.send(ctx.author.mention + ' I\'m too *cool* to die.')
 
     else:
         await ctx.channel.send('No, bad ' + ctx.author.mention + '!\nType only **!mrfreeze** for dank Mr. Freeze quotes, or **!mrfreeze what** for an explanation.')
