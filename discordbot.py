@@ -1055,20 +1055,44 @@ async def _rps(ctx, *kwargs):
     # This makes the kwargs into a list and makes them all lowercase.
     kwargs = list_kwargs(kwargs)
 
-    if ('stats' in kwargs or 'statistics' in kwargs or 'score' in kwargs or 'scoreboard' in kwargs):
+    # This makes it easier to add score words + allows us to just typ !rps wins
+    score_words     = ('stats', 'statistics', 'stat', 'score',
+                       'scores', 'scoreboard', 'points')
+
+    specific_scores = {
+        'wins':       ('wins', 'win'),
+        'losses':     ('losses', 'loss', 'loses', 'lose', 'lost', 'losts'),
+        'draws':      ('draws', 'draw'),
+        'totals':     ('total', 'totals'),
+        'percentage': ('percentage', 'ratio')
+    }
+
+    for i in specific_scores:
+        for k in specific_scores[i]:
+            print(k)
+            if k in kwargs:
+                kwargs = ['scores', i]
+                break
+
+    for i in range(len(kwargs)):
+        if kwargs[i] in score_words:
+            kwargs[i] = 'scores'
+            break
+
+    if 'scores' in kwargs:
         # If no mentions, show scoreboard.
         # Defaults to percentage if nothing else is specified.
         if len(ctx.message.mentions) == 0:
-            if 'wins' in kwargs or 'win' in kwargs:
-                scoreboard = 'wins'
-            elif 'losses' in kwargs or 'loss' in kwargs or 'loses' in kwargs or 'lose' in kwargs:
+            if 'percentage' in kwargs:
+                scoreboard = 'percentage'
+            elif 'losses' in kwargs:
                 scoreboard = 'losses'
-            elif 'draws' in kwargs or 'draw' in kwargs:
+            elif 'draws' in kwargs:
                 scoreboard = 'draws'
-            elif 'total' in kwargs or 'totals' in kwargs:
+            elif 'total' in kwargs:
                 scoreboard = 'total'
             else: # The default option.
-                scoreboard = 'percentage'
+                scoreboard = 'wins'
 
             # Get scoreboard from _rps_scores() and send it.
             await ctx.channel.send(await _rps_scores(ctx, scoreboard))
