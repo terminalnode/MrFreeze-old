@@ -159,6 +159,9 @@ async def _mrfreeze(ctx, *kwargs):
     elif 'sucks' in kwargs or 'suck' in kwargs:
         await ctx.channel.send(ctx.author.mention + ' No, *you* suck!')
 
+    elif 'die' in kwargs or ('kill' in kwargs and 'yourself' in kwargs):
+        await ctx.channel.send(ctx.author.mention + ' I will never die.')
+
     else:
         await ctx.channel.send('No, bad ' + ctx.author.mention + '!\nType only **!mrfreeze** for dank Mr. Freeze quotes, or **!mrfreeze what** for an explanation.')
 
@@ -173,9 +176,9 @@ async def _mrfreeze(ctx, *kwargs):
 ### BANISH TO ANTARCTICA ###
 ############################
 @bot.command(name='banish')
-# Use this to create an error handler for bad arguments.
-# https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
 async def _banish(ctx, *kwargs):
+    kwargs = list_kwargs(kwargs)
+
     # If the kwargs are empty or only containing 'help' we'll show the help message.
     if not kwargs:
         kwargs = ('help',)
@@ -1238,6 +1241,8 @@ async def _rps(ctx, *kwargs):
 #####################
 @bot.command(name='region')
 async def _region(ctx, *kwargs):
+    kwargs = list_kwargs(kwargs)
+
     # on_ready we created a dictionary with all the region ids:
     global server_region_roles
     region_ids = server_region_roles[ctx.guild.id]
@@ -1313,7 +1318,7 @@ async def _region(ctx, *kwargs):
 
     said_antarctica = ('anarctica' in kwargs or 'antarctica' in kwargs or 'antartica' in kwargs or
                        'anartica' in kwargs or 'anctartica' in kwargs or 'anctarctica' in kwargs or 'antacrtica' in kwargs)
-    spelled_right = 'antarctica' in kwargs
+    spelled_right   =  'antarctica' in kwargs
     if said_antarctica:
         await commandlog(ctx, 'TROLL', 'REGION', 'Claimed to live in Antarctica.')
         if not spelled_right:
