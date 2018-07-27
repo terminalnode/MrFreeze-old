@@ -1586,6 +1586,11 @@ async def _temp(ctx, *kwargs):
         newtemp = float(newtemp) # ensures that the number isn't a fraction
         newtemp = round(newtemp,2) # rounds to two decimal points
 
+        if temp == newtemp:
+            await ctx.channel.send(ctx.author.mention + ' -40 is the same in celcius and fahrenheit you filthy smud.')
+            await commandlog(ctx, 'SUCCESS', 'TEMP', '40 is the same in both units.')
+            return
+
         # This is the message we will print:
         full_temp_message = (ctx.author.mention + ' ' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!')
 
