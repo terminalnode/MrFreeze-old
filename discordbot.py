@@ -1572,44 +1572,44 @@ async def _temp(ctx, *kwargs):
                                'Type !temp help for instructions.')
         await commandlog(ctx, 'FAIL', 'TEMP', 'Invalid formatting, command requires an integer.')
         return
+
+    if unit == 'c':
+        # [°F] = [°C] × ​9⁄5 + 32
+        newtemp = temp * fractions.Fraction(9, 5) + 32
+        t_origin = ' °C'
+        t_target = ' °F'
+    elif unit == 'f':
+        # [°C] = ([°F] − 32) × ​5⁄9
+        newtemp = (temp - 32) * fractions.Fraction(5, 9)
+        t_origin = ' °F'
+        t_target = ' °C'
+    newtemp = float(newtemp) # ensures that the number isn't a fraction
+    newtemp = round(newtemp,2) # rounds to two decimal points
+
+    if temp == newtemp:
+        await ctx.channel.send(ctx.author.mention + ' -40 is the same in celcius and fahrenheit you filthy smud.')
+        await commandlog(ctx, 'SUCCESS', 'TEMP', '40 is the same in both units.')
+        return
+
+    # This is the message we will print:
+    full_temp_message = (ctx.author.mention + ' ' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!')
+
+    # At this point, we're adding a small gif of a dog saying Welcome to Hell
+    # If the temperature in celcius is above a certain threshold.
+    hell_threshold = 35
+    above_threshold = False
+    if (t_origin == ' °C' and temp >= hell_threshold) or (t_origin == ' °F' and newtemp >= hell_threshold):
+        above_threshold = True
+
+    # Finally, we're ready to print the message:
+    if above_threshold == True:
+        image = discord.Embed().set_image(url=get_image('WelcomeToHell'))
+        await ctx.channel.send(full_temp_message, embed=image)
+        await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!' +
+                        ' Hell dog awoken.'))
     else:
-        if unit == 'c':
-            # [°F] = [°C] × ​9⁄5 + 32
-            newtemp = temp * fractions.Fraction(9, 5) + 32
-            t_origin = ' °C'
-            t_target = ' °F'
-        elif unit == 'f':
-            # [°C] = ([°F] − 32) × ​5⁄9
-            newtemp = (temp - 32) * fractions.Fraction(5, 9)
-            t_origin = ' °F'
-            t_target = ' °C'
-        newtemp = float(newtemp) # ensures that the number isn't a fraction
-        newtemp = round(newtemp,2) # rounds to two decimal points
-
-        if temp == newtemp:
-            await ctx.channel.send(ctx.author.mention + ' -40 is the same in celcius and fahrenheit you filthy smud.')
-            await commandlog(ctx, 'SUCCESS', 'TEMP', '40 is the same in both units.')
-            return
-
-        # This is the message we will print:
-        full_temp_message = (ctx.author.mention + ' ' + str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!')
-
-        # At this point, we're adding a small gif of a dog saying Welcome to Hell
-        # If the temperature in celcius is above a certain threshold.
-        hell_threshold = 35
-        above_threshold = False
-        if (t_origin == ' °C' and temp >= hell_threshold) or (t_origin == ' °F' and newtemp >= hell_threshold):
-            above_threshold = True
-
-        # Finally, we're ready to print the message:
-        if above_threshold == True:
-            image = discord.Embed().set_image(url=get_image('WelcomeToHell'))
-            await ctx.channel.send(full_temp_message, embed=image)
-            await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!' +
-                            ' Hell dog awoken.'))
-        else:
-            await ctx.channel.send(full_temp_message)
-            await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!'))
+        await ctx.channel.send(full_temp_message)
+        await commandlog(ctx, 'SUCCESS', 'TEMP', (str(temp) + t_origin + ' is ' + str(newtemp) + t_target + '!'))
 
 ######## source ###########
 ### GET BOT SOURCE CODE ###
