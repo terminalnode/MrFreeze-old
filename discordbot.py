@@ -1390,7 +1390,7 @@ async def _region(ctx, *kwargs):
     for i in range(len(new_author_roles)):
         new_author_roles[i] = discord.Object(id = new_author_roles[i])
     await ctx.author.edit(roles=new_author_roles)
-    await ctx.channel.send(ctx.author.mention + 'You\'ve been assigned a new role, welcome to ' + new_role_name + '!')
+    await ctx.channel.send(ctx.author.mention + ' You\'ve been assigned a new role, welcome to ' + new_role_name + '!')
     await commandlog(ctx, 'SUCCESS', 'REGION', ('They got assigned to: ' + new_role_name))
 
 ######## quote ########
