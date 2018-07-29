@@ -242,10 +242,6 @@ async def _banish(ctx, *kwargs):
 ######################
 @bot.command(name='dmcl')
 async def _dmcl(ctx, *kwargs):
-    # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-    # TODO DM last X number of lines from the log. TODO
-    # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-    # If the user isn't mod they're getting thrown out.
     if not await is_mod(ctx, ctx.author):
         await ctx.channel.send(ctx.author.mention + ' Dream on, you don\'t have sufficient priveligies to view, delete the logs ' +
                                                     'or even ask for help on how to use this command.')
