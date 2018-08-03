@@ -134,6 +134,11 @@ async def on_ready():
         }
 
 @bot.event
+async def on_member_remove(member):
+    mod_channel = discord.utils.get(member.guild.channels, name='mod-discussion')
+    await mod_channel.send(member.mention + ' has left the server. :(')
+
+@bot.event
 async def on_command_error(ctx, error):
     get_command = re.compile('!\w+')
     command = get_command.match(ctx.message.content).group()
