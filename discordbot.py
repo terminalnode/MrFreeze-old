@@ -1648,6 +1648,7 @@ async def _dummies(ctx, *kwargs):
 async def _gitupdate(ctx, *kwargs):
     if ctx.author.id == 154516898434908160: # This is my discord user ID. If you're modifying this, change to your ID.
         # git fetch returns nothing if no updates were found
+        # for some reason the output of git fetch is posted to stderr
         gitfetch = str(run(['git', 'fetch'], stderr=PIPE, encoding='utf_8').stderr)
         gitpull = str(run(['git', 'pull'], stdout=PIPE, encoding='utf_8').stdout)
         output = str()
