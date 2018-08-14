@@ -1274,59 +1274,6 @@ async def _region(ctx, *kwargs):
     if not kwargs:
         kwargs = ('help',)
 
-    # This is in case we need to read back to them what they wrote.
-    kwargmerge = str()
-    for i in kwargs:
-        kwargmerge += i + ' '
-    kwargmerge = kwargmerge.strip()
-
-    # Merge two-part arguments:
-    kwargs = list(kwargs)
-    for i in range(len(kwargs)):
-        if kwargs[i] == 'united':
-            if kwargs[i+1] == 'states':
-                kwargs[i] = 'unitedstates'
-                kwargs.pop(i+1)
-
-            elif kwargs[i+1] == 'kingdom':
-                kwargs[i] = 'unitedkingdom'
-                kwargs.pop(i+1)
-
-        elif kwargs[i] == 'great':
-            if kwargs[i+1] == 'britain' or kwargs[i+1] == 'brittain':
-                kwargs[i] = 'greatbritain'
-                kwargs.pop(i+1)
-
-        elif kwargs[i] == 'north':
-            if kwargs[i+1] == 'america' or kwargs[i+1] == 'murica':
-                kwargs[i] = 'northamerica'
-                kwargs.pop(i+1)
-
-        elif kwargs[i] == 'south':
-            if kwargs[i+1] == 'america' or kwargs[i+1] == 'murica':
-                kwargs[i] = 'southamerica'
-                kwargs.pop(i+1)
-
-            elif kwargs[i+1] == 'korea':
-                kwargs[i] = 'asia'
-                kwargs.pop(i+1)
-
-            elif kwargs[i+1] == 'korea':
-                kwargs[i] = 'asia'
-                kwargs.pop(i+1)
-
-        elif kwargs[i] == 'new':
-            if kwargs[i+1] == 'zeeland' or kwargs[i+1] == 'zealand' or kwargs[i+1] == 'zeland':
-                kwargs[i] = 'newzealand'
-                kwargs.pop(i+1)
-
-        if kwargs[i] == 'middle':
-            if kwargs[i+1] == 'east':
-                kwargs[i] = 'middleeast'
-                kwargs[i+1].pop()
-        if i == len(kwargs) - 1:
-            break
-
     # Let's end this here and now if the user just wanted help.
     if 'help' in kwargs:
         await ctx.channel.send(open('config/regionhelp', 'r').read())
@@ -1368,12 +1315,13 @@ async def _region(ctx, *kwargs):
     'Africa':           ['africa', 'kongo', 'uganda'],
     'Oceania':          ['oceania', 'australia', 'newzealand'],
     'South America':    ['southamerica', 'argentina', 'chile', 'brazil', 'peru'],
-    'Middle East':      ['middleeast', 'middle-east', 'mesa', 'saudi', 'saudiarabia', 'arabia', 'arabian']
+    'Middle East':      ['middleeast', 'middle-east', 'midleeast', 'midle-east', 'middleast', 'midleast', 'mesa', 'saudi', 'saudiarabia', 'arabia', 'arabian']
     }
 
     # First we'll get all roles the user currently has with all regions removed.
     author_roles = [ i.id for i in ctx.author.roles if i.id not in region_ids.values() ]
     new_author_roles = [ i.id for i in ctx.author.roles if i.id not in region_ids.values() ]
+    kwargs = ''.join(kwargs)
 
     for region in regional_aliases:
         for alias in regional_aliases[region]:
