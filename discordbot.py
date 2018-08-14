@@ -237,10 +237,10 @@ async def _banish(ctx, *kwargs):
         await victim.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
 
     if len(victims) == 1:
-        await ctx.channel.send('It\'s with great regreat that I must inform you all, that ' +
+        await ctx.channel.send('It\'s with great regret that I must inform you all that ' +
                                victim_mentions + '\'s exile has come to an end.')
     else:
-        await ctx.channel.send('It\'s with great regreat that I must inform you all, that the exile of ' +
+        await ctx.channel.send('It\'s with great regret that I must inform you all that the exile of ' +
                                victim_mentions + ' has come to an end.')
 
 ######## dmcl ########
