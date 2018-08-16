@@ -344,7 +344,7 @@ async def _rules(ctx, *kwargs):
                 kwargsl.pop(i+2)
         except IndexError:
             pass
-
+ 
     # This is the key for different aliases by which you can call the rules
     r_aliases = {
         1: ['1', 'topic', 'ontopic', 'offtopic'],
