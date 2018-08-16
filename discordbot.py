@@ -308,7 +308,7 @@ async def _restart(ctx, *kwargs):
 ##### rules #####
 ### GET RULES ###
 #################
-@bot.command(name='rules')
+@bot.command(name='rules', aliases=['rule',])
 async def _rules(ctx, *kwargs):
     ruleprint = str()
     rules = list()
@@ -347,7 +347,7 @@ async def _rules(ctx, *kwargs):
 
     # This is the key for different aliases by which you can call the rules
     r_aliases = {
-        1: ['1', 'topic', 'ontopic'],
+        1: ['1', 'topic', 'ontopic', 'offtopic'],
         2: ['2', 'civil', 'behave'],
         3: ['3', 'dismissive'],
         4: ['4', 'jokes'],
