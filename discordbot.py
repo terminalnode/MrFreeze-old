@@ -1306,6 +1306,14 @@ async def _region(ctx, *kwargs):
             await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
         return
 
+    # These users are banned from using anything but !region antarctica.
+    # 224962304284819458 matcha
+    banned = (224962304284819458,)
+
+    if ctx.author.id in banned:
+        await ctx.send(ctx.author.mention + ' You\'ve been banned from changing your region. However, you can still travel to Antarctica if you wish. :wink:')
+        return
+
     # These are our regions and a bunch of aliases
     regional_aliases = {
     'Asia':             ['asia', 'china', 'japan', 'thailand', 'korea'],
