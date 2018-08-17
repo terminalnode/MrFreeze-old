@@ -133,11 +133,17 @@ async def on_ready():
             'Middle East':      discord.utils.get(s_guild.roles, name='Middle East').id
         }
 
+# Message when people leave.
 @bot.event
 async def on_member_remove(member):
     mod_channel = discord.utils.get(member.guild.channels, name='mod-discussion')
     member_name = str(member.name + '#' + str(member.discriminator))
-    await mod_channel.send(member.mention + ' (' + member_name + ')' + ' has left the server. :(')
+    embed = discord.Embed(color=0x00dee9)
+    embed.set_thumbnail(url=member.avatar_url)
+    embed.add_field( name='A member has left the server! :sob:',
+                     value=('**%s#%s** is a trechorous smud who\'s turned their back on %s.' %
+                     (member.name, str(member.discriminator), member.guild.name)) )
+    await mod_channel.send(embed=embed)
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -344,7 +350,7 @@ async def _rules(ctx, *kwargs):
                 kwargsl.pop(i+2)
         except IndexError:
             pass
- 
+
     # This is the key for different aliases by which you can call the rules
     r_aliases = {
         1: ['1', 'topic', 'ontopic', 'offtopic'],
