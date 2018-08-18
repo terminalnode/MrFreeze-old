@@ -1337,20 +1337,21 @@ async def _region(ctx, *kwargs):
     new_author_roles = [ i.id for i in ctx.author.roles if i.id not in region_ids.values() ]
     kwargs = ''.join(kwargs)
 
+    region_hit = False
     for region in regional_aliases:
         for alias in regional_aliases[region]:
             if alias in kwargs:
-                new_author_roles.append(region_ids[region])
-                new_role_name = region
-
+                if not region_hit:
+                    new_author_roles.append(region_ids[region])
+                    new_role_name = region
+                    region_hit = True
 
     if author_roles == new_author_roles:
-        await ctx.channel.send(ctx.author.mention + ' I couldn\'t find any match for ' + kwargmerge + '.\n'
+        await ctx.channel.send(ctx.author.mention + ' I couldn\'t find any match for ' + kwargs + '.\n'
                               'Please check your spelling or type \'!region list\' for a list of available regions.')
-        await commandlog(ctx, 'FAIL', 'REGION', 'No match for: ' + kwargmerge)
+        await commandlog(ctx, 'FAIL', 'REGION', 'No match for: ' + kwargs)
         return
 
-    new_roles = list()
     for i in range(len(new_author_roles)):
         new_author_roles[i] = discord.Object(id = new_author_roles[i])
     await ctx.author.edit(roles=new_author_roles)
