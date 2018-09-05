@@ -1314,7 +1314,7 @@ async def _region(ctx, *kwargs):
 
     # These users are banned from using anything but !region antarctica.
     # 224962304284819458 matcha
-    banned = (224962304284819458,)
+    banned = (224962304284819458,384106541453803520)
 
     if ctx.author.id in banned:
         await ctx.send(ctx.author.mention + ' You\'ve been banned from changing your region. However, you can still travel to Antarctica if you wish. :wink:')
@@ -1325,7 +1325,7 @@ async def _region(ctx, *kwargs):
     'Asia':             ['asia', 'china', 'japan', 'thailand', 'korea'],
     'Europe':           ['europe', 'evropa', 'unitedkingdom', 'gb', 'greatbritain', 'scandinavia', 'germany', 'sweden', 'norway', 'spain', 'france', 'italy',
                         'ireland', 'poland', 'russia', 'finland', 'estonia', 'scotland', 'scottland', 'portugal'],
-    'North America':    ['northamerica', 'america', 'us', 'canada', 'mexico', 'na', 'usa', 'amercia', 'unitedstates'],
+    'North America':    ['northamerica', 'us', 'canada', 'mexico', 'na', 'usa', 'unitedstates'],
     'Africa':           ['africa', 'kongo', 'uganda'],
     'Oceania':          ['oceania', 'australia', 'newzealand'],
     'South America':    ['southamerica', 'argentina', 'chile', 'brazil', 'peru'],
