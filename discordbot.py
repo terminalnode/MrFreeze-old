@@ -1314,6 +1314,7 @@ async def _region(ctx, *kwargs):
 
     # These users are banned from using anything but !region antarctica.
     # 224962304284819458 matcha
+    # 384106541453803520 inkyfingerz
     banned = (224962304284819458,384106541453803520)
 
     if ctx.author.id in banned:
