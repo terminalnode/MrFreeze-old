@@ -283,7 +283,7 @@ async def _dmcl(ctx, *kwargs):
     # If delete was requested, the command logs will be deleted.
     elif 'delete' in kwargs or 'clear' in kwargs:
         await ctx.channel.send(ctx.author.mention + 'The commandlogs for ' + ctx.guild.name + ' will now be deleted and with it all evidence ' +
-                                                    'of your ill deeds will be purged from the face of this world. :wine_glass:')
+                                                    'of your ill deeds purged from the face of this world. :wine_glass:')
         if os.path.exists(serverlog):
             os.remove(serverlog)
         await commandlog(ctx, 'DELETE', 'DMCL')
