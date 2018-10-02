@@ -1583,7 +1583,7 @@ async def _temp(ctx, *kwargs):
 @bot.command(name='source')
 async def _source(ctx, *kwargs):
     await ctx.channel.send('My source code is available at:\n' +
-                           'https://github.com/kaminix/DrFreeze')
+                           'https://github.com/terminalnode/DrFreeze')
     await commandlog(ctx, 'SUCCESS', 'SOURCE')
 
 ####### readme #######
@@ -1593,7 +1593,7 @@ async def _source(ctx, *kwargs):
 async def _readme(ctx, *kwargs):
     await ctx.channel.send('This may be more information than you\'re looking for, ' +
                            'but here\'s a link to the readme for you:\n' +
-                           '<https://github.com/kaminix/MrFreeze/blob/master/README.md>')
+                           '<https://github.com/terminalnode/MrFreeze/blob/master/README.md>')
     await commandlog(ctx, 'SUCCESS', 'README')
 
 ####### dummies ########
