@@ -208,7 +208,7 @@ async def _banish(ctx, *kwargs):
                                ctx.author.mention + ' will be banished to the frozen hells of Antarctica for 7 minutes!')
         await ctx.author.add_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
         await asyncio.sleep(7*60) # 7*60 seconds = 7 minutes
-        await member.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
+        await ctx.author.remove_roles(discord.utils.get(ctx.guild.roles, name='Antarctica'))
         return
 
     # Now let's extract all the users from the mentions.
