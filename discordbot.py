@@ -1423,12 +1423,13 @@ async def _vote(ctx, *kwargs):
                 pass
 
     if did_react == True:
+        # The "That's such a great proposition"-reply is disabled because it was super 
         if used_nitro == False:
-            await ctx.channel.send(ctx.author.mention + ' That\'s such a great proposition that I voted for everything!')
+            # await ctx.channel.send(ctx.author.mention + ' That\'s such a great proposition that I voted for everything!')
             await commandlog(ctx, 'SUCCESS', 'VOTE')
             return
         else:
-            await ctx.channel.send(ctx.author.mention + 'That\'s such a great proposition I tried to vote for everything!\n' +
+            # await ctx.channel.send(ctx.author.mention + 'That\'s such a great proposition I tried to vote for everything!\n' +
                                   'However some of your alternatives used nitro emojis which I can\'t use.')
             await commandlog(ctx, 'SUCCESS', 'VOTE' 'I couldn\'t do all reacts due to nitro emojis.')
             return
