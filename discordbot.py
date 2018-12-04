@@ -112,8 +112,11 @@ async def on_ready():
     print ('User ID: ' + str(bot.user.id))
     print ('-----------')
     for i in bot.guilds:
-        bot_trash = discord.utils.get(i.channels, name='bot-trash')
-        await bot_trash.send(':wave: ' + mrfreezequote())
+        try:
+            bot_trash = discord.utils.get(i.channels, name='bot-trash')
+            await bot_trash.send(':wave: ' + mrfreezequote())
+        except:
+            print('I wasn\'t able to greet in {}, they have no trash!'.format(i.name))
 
     await bot.change_presence(status=None, activity=
         discord.Activity(name='your commands...', type=discord.ActivityType.listening))
@@ -122,16 +125,20 @@ async def on_ready():
     # creating this now so we won't have to do a bunch of API-calls later.
     global server_region_roles
     server_region_roles = dict()
+
     for s_guild in bot.guilds:
-        server_region_roles[s_guild.id] = {
-            'Asia':             discord.utils.get(s_guild.roles, name='Asia').id,
-            'Europe':           discord.utils.get(s_guild.roles, name='Europe').id,
-            'North America':    discord.utils.get(s_guild.roles, name='North America').id,
-            'Africa':           discord.utils.get(s_guild.roles, name='Africa').id,
-            'Oceania':          discord.utils.get(s_guild.roles, name='Oceania').id,
-            'South America':    discord.utils.get(s_guild.roles, name='South America').id,
-            'Middle East':      discord.utils.get(s_guild.roles, name='Middle East').id
-        }
+        try:
+            server_region_roles[s_guild.id] = {
+                'Asia':             discord.utils.get(s_guild.roles, name='Asia').id,
+                'Europe':           discord.utils.get(s_guild.roles, name='Europe').id,
+                'North America':    discord.utils.get(s_guild.roles, name='North America').id,
+                'Africa':           discord.utils.get(s_guild.roles, name='Africa').id,
+                'Oceania':          discord.utils.get(s_guild.roles, name='Oceania').id,
+                'South America':    discord.utils.get(s_guild.roles, name='South America').id,
+                'Middle East':      discord.utils.get(s_guild.roles, name='Middle East').id
+            }
+        except:
+            server_region_roles[s_guild.id] = 'NAH'
 
 # Message when people leave.
 @bot.event
