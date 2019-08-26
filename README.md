@@ -1,3 +1,6 @@
+## You're looking at the old version of MrFreeze!
+This version is no longer being maintained, if you're looking for the latest version it's available [here](https://github.com/terminalnode/mrfreeze).
+
 # MrFreeze
 This is a discord bot only meant for use on the The Penposium discord server, a discord server for fountain pens. It's made available here mainly for backup and versioning, but feel free to use this code or parts of it for your own bot if you find it useful. The reason for making this is simply that we couldn't find a pre-made bot that filled our needs.
 
